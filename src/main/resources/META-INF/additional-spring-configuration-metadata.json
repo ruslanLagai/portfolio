@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "tinkoff.api.token",
+      "type": "java.lang.String",
+      "description": "Tinkoff api token."
+    },
+    {
+      "name": "tinkoff.api.url",
+      "type": "java.lang.String",
+      "description": "Tinkoff api url."
+    }
+  ] }
