@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 public enum InstrumentType {
     STOCK("Stock"),
     ETF("Etf"),
+    BOND("Bond"),
     CURRENCY("Currency");
 
     private final String type;

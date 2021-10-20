@@ -2,4 +2,10 @@ tinkoff:
   api:
 #    token: t.pFGWIbIK0_H5k1dQCR1XQ86vayy96VMNgpa4aPTIYn0h-0oJc_V93nTciBOTID_RdJ7MbqHiZmcoR_5vRZmlFg
     token: t.Dt6WTC41lKyNtXTOGP0zBDPvFaq-QuLeG2G_dCwQxyBeHhhBCnLX1_404krmeRHwvWvHcEvEJLzalzWKvej24A
-  url: https://api-invest.tinkoff.ru/openapi
+    url: https://api-invest.tinkoff.ru/openapi
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full

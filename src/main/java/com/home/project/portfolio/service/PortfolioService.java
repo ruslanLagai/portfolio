@@ -2,18 +2,18 @@ package com.home.project.portfolio.service;
 
 import com.home.project.portfolio.client.TinkoffClient;
 import com.home.project.portfolio.model.analytic.Period;
-import com.home.project.portfolio.model.operations.Operations;
-import com.home.project.portfolio.model.portfolio.Account;
-import com.home.project.portfolio.model.portfolio.Accounts;
 import com.home.project.portfolio.model.response.OperationsDto;
 import com.home.project.portfolio.model.response.PortfolioDto;
+import com.home.project.portfolio.processor.AccountProcessor;
+import com.home.project.portfolio.processor.OperationsProcessor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import static com.home.project.portfolio.utils.Constants.TINKOFF_API_DATE_TIME_FORMAT;
 
 /**
  * Class to get information about current stocks in portfolio
@@ -22,58 +22,48 @@ import java.util.stream.Stream;
 @Log4j2
 public class PortfolioService {
 
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(TINKOFF_API_DATE_TIME_FORMAT);
     private final TinkoffClient tinkoffClient;
+    private final List<OperationsProcessor> operationsProcessors;
+    private final List<AccountProcessor> accountProcessors;
 
-    public PortfolioService(TinkoffClient tinkoffClient) {
+    public PortfolioService(TinkoffClient tinkoffClient,
+                            List<OperationsProcessor> operationsProcessors,
+                            List<AccountProcessor> accountProcessors) {
         this.tinkoffClient = tinkoffClient;
+        this.operationsProcessors = operationsProcessors;
+        this.accountProcessors = accountProcessors;
     }
 
     //todo put to DB
     public PortfolioDto getPortfolio() {
         var portfolioDto = new PortfolioDto();
         tinkoffClient.getUserAccounts().getPayload().getAccounts()
-                .forEach(account -> populateStocksData(portfolioDto, account));
+                .forEach(account -> accountProcessors
+                        .forEach(accountProcessor -> accountProcessor.apply(account, portfolioDto)));
         return portfolioDto;
     }
 
     //todo first check in cache, then in DB, if no -> rest
     public OperationsDto getLastOperations(String accountId, Period period) {
         var operationsDto = new OperationsDto();
-        var start = LocalDateTime.from(Instant.now().minus(period.getPeriodDuration()));
-        var operations = tinkoffClient.getOperations(start, LocalDateTime.now(), accountId);
-        return populateOperationsData(operationsDto, operations);
-    }
+        var start = ZonedDateTime.from(ZonedDateTime.now().minus(period.getPeriodDuration())).format(FORMATTER);
+        var operations = tinkoffClient.getOperations(start, ZonedDateTime.now().format(FORMATTER), accountId);
 
-    private OperationsDto populateOperationsData(OperationsDto operationsDto, Operations operations) {
+        log.info("Retrieved operations for period: {}. Starting from {}", period.getPeriodDuration(), start);
+
         if (operations == null || operations.getPayload() == null ||
                 !operations.getStatus().equalsIgnoreCase("ok")) {
             log.warn("Failed to retrieve operations");
             return operationsDto;
         }
-        operations.getPayload().getOperations()
-                .forEach(operation -> operationsDto.addOperationOnStock(operation.getTicker(), operation));
+
+        log.info("Retrieved {} operations", operations.getPayload().getOperations().size());
+
+        operationsProcessors
+                .forEach(operationsProcessor -> operationsProcessor.apply(operations, operationsDto));
         operationsDto.sortOperationsByDate();
         return operationsDto;
-    }
-
-    private void populateStocksData(PortfolioDto portfolioDto, Account account) {
-        log.info("Getting positions for accountId {}, accountType {}",
-                account.getBrokerAccountId(), account.getBrokerAccountType().name());
-        var portfolio = tinkoffClient.getPortfolioForAccount(account.getBrokerAccountId());
-        if (!portfolio.getStatus().equalsIgnoreCase("ok")) {
-            log.warn("Retrieved portfolio contains non ok status: {}", portfolio.getStatus());
-        }
-        if (portfolio.getPayload() == null) {
-            log.warn("Retrieved null payload for portfolio, accountId {}", account.getBrokerAccountId());
-        }
-        Stream.of(portfolio)
-                .filter(p -> p.getStatus().equalsIgnoreCase("ok"))
-                .filter(p -> p.getPayload() != null)
-                .forEach(p -> {
-                    log.info("Retrieved {} positions", portfolio.getPayload().getPositions().size());
-                    portfolioDto.addPositions(account, portfolio.getPayload().getPositions());
-                });
-
     }
 
 }

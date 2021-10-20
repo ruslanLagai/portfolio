@@ -22,7 +22,7 @@ public class TinkoffFeignConfig {
 
     @Bean
     Retryer retryer() {
-        return new Retryer.Default(100, SECONDS.toMillis(1), 3);
+        return new Retryer.Default(500, SECONDS.toMillis(1), 5);
     }
 
     @Bean

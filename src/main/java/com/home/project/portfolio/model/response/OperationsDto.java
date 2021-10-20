@@ -1,6 +1,7 @@
 package com.home.project.portfolio.model.response;
 
 import com.home.project.portfolio.model.operations.Operation;
+import com.home.project.portfolio.model.operations.OperationType;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.LinkedMultiValueMap;
@@ -13,14 +14,29 @@ import java.util.stream.Collectors;
 /**
  * Dto to return
  */
+@Getter
 public class OperationsDto {
 
-    @Getter
-    @Setter
-    private MultiValueMap<String, Operation> operationsByTicker = new LinkedMultiValueMap<>();
+
+    private final MultiValueMap<String, Operation> operationsByTicker = new LinkedMultiValueMap<>();
+    private final MultiValueMap<OperationType, Operation> commissions = new LinkedMultiValueMap<>();
+    private final MultiValueMap<OperationType, Operation> payments = new LinkedMultiValueMap<>();
+    private final MultiValueMap<OperationType, Operation> taxes = new LinkedMultiValueMap<>();
 
     public void addOperationOnStock(String ticker, Operation operation) {
         operationsByTicker.add(ticker, operation);
+    }
+
+    public void addCommission(Operation operation) {
+        commissions.add(operation.getOperationType(), operation);
+    }
+
+    public void addPayment(Operation operation) {
+        payments.add(operation.getOperationType(), operation);
+    }
+
+    public void addTax(Operation operation) {
+        taxes.add(operation.getOperationType(), operation);
     }
 
     public void addOperations(String ticker, List<Operation> operations) {
