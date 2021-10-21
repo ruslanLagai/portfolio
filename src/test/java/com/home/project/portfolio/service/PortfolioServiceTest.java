@@ -3,6 +3,7 @@ package com.home.project.portfolio.service;
 import com.home.project.portfolio.client.TinkoffClient;
 import com.home.project.portfolio.helpers.YamlPropertySourceFactory;
 import com.home.project.portfolio.model.analytic.Period;
+import com.home.project.portfolio.model.operations.StockAvailability;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -54,6 +55,25 @@ class PortfolioServiceTest {
                 assertTrue(StringUtils.isNotBlank(v.get(0).getTicker()));
                 assertTrue(StringUtils.isNotBlank(v.get(2).getName()));
                 assertThat(v.get(4).getBalance(), Matchers.greaterThan(0.0));
+            });
+            result.getPrices().forEach((k, v) -> {
+                assertThat(v.size(), Matchers.lessThan(2));
+                assertThat(v.get(0).getLastPrice(), Matchers.greaterThan(0.0));
+                v.stream().filter(overbook -> overbook.getTradeStatus().equals(StockAvailability.AVAILABLE))
+                        .forEach(overbook -> {
+                            assertThat(overbook.getDepth(), Matchers.equalTo(1));
+                            assertThat(overbook.getLimitDown(), Matchers.greaterThan(0.0));
+                            assertThat(overbook.getLimitUp(), Matchers.greaterThan(0.0));
+                            assertThat(overbook.getAsks().get(0).getPrice(), Matchers.greaterThan(0.0));
+                            assertThat(overbook.getBids().get(0).getPrice(), Matchers.greaterThan(0.0));
+                        });
+                v.stream().filter(overbook -> overbook.getTradeStatus().equals(StockAvailability.NOT_AVAILABLE))
+                        .forEach(overbook -> {
+                            assertThat(overbook.getLimitDown(), Matchers.equalTo(0.0));
+                            assertThat(overbook.getLimitUp(), Matchers.equalTo(0.0));
+                            assertThat(overbook.getAsks().size(), Matchers.equalTo(0));
+                            assertThat(overbook.getBids().size(), Matchers.equalTo(0));
+                        });
             });
         });
     }

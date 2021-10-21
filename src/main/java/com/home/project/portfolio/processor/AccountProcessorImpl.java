@@ -35,9 +35,18 @@ public class AccountProcessorImpl implements AccountProcessor {
         Stream.of(portfolio)
                 .filter(p -> p.getStatus().equalsIgnoreCase("ok"))
                 .filter(p -> p.getPayload() != null)
-                .forEach(p -> {
+                .peek(p -> {
                     log.info("Retrieved {} positions", portfolio.getPayload().getPositions().size());
                     portfolioDto.addPositions(account, portfolio.getPayload().getPositions());
-                });
+                })
+                .forEach(p -> p.getPayload().getPositions()
+                        .forEach(positions -> {
+                            log.info("Getting prices for instruments, figi {}", positions.getFigi());
+                            var overbook = tinkoffClient.getCurrentPrice(positions.getFigi(), 1);
+                            log.debug("Received overbook for {}, overbook {}", positions.getFigi(),
+                                    overbook.getPayload().toString());
+                            portfolioDto.addPrice(positions.getFigi(), overbook.getPayload());
+                        })
+                );
     }
 }

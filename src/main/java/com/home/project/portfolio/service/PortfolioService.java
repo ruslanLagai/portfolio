@@ -44,6 +44,12 @@ public class PortfolioService {
         return portfolioDto;
     }
 
+    public PortfolioDto getCurrentPrice(String figi, PortfolioDto portfolioDto) {
+        var overbook = tinkoffClient.getCurrentPrice(figi, 1);
+        portfolioDto.addPrice(figi, overbook.getPayload());
+        return portfolioDto;
+    }
+
     //todo first check in cache, then in DB, if no -> rest
     public OperationsDto getLastOperations(String accountId, Period period) {
         var operationsDto = new OperationsDto();

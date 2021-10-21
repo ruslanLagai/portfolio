@@ -3,6 +3,7 @@ package com.home.project.portfolio.client;
 import com.home.project.portfolio.config.TinkoffFeignConfig;
 import com.home.project.portfolio.model.operations.Instrument;
 import com.home.project.portfolio.model.operations.Operations;
+import com.home.project.portfolio.model.operations.PriceResponse;
 import com.home.project.portfolio.model.portfolio.Accounts;
 import com.home.project.portfolio.model.portfolio.Portfolio;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -33,5 +34,8 @@ public interface TinkoffClient {
 
     @GetMapping("/market/search/by-figi")
     Instrument getInstrumentInfoByFigi(@RequestParam String figi);
+
+    @GetMapping("/market/orderbook")
+    PriceResponse getCurrentPrice(@RequestParam String figi, @RequestParam int depth);
 }
 
