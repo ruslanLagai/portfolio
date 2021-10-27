@@ -17,6 +17,7 @@ public class Operation {
     private Status status;
     private Currency currency;
     private double payment;
+    private double price;
     private int quantity;
     private int quantityExecuted;
     private String figi;

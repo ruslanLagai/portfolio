@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Positions {
+public class Position {
     private String figi;
     private String ticker;
     private String isin;

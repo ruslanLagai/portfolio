@@ -17,6 +17,6 @@ public class Portfolio {
 
     @Data
     public static class Payload {
-        private List<Positions> positions;
+        private List<Position> positions;
     }
 }

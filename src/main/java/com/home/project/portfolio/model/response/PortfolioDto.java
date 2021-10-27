@@ -2,7 +2,7 @@ package com.home.project.portfolio.model.response;
 
 import com.home.project.portfolio.model.operations.Overbook;
 import com.home.project.portfolio.model.portfolio.Account;
-import com.home.project.portfolio.model.portfolio.Positions;
+import com.home.project.portfolio.model.portfolio.Position;
 import lombok.Data;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -14,15 +14,15 @@ import java.util.*;
  */
 @Data
 public class PortfolioDto {
-    private MultiValueMap<Account, Positions> positions = new LinkedMultiValueMap<>();
+    private MultiValueMap<Account, Position> positions = new LinkedMultiValueMap<>();
     private MultiValueMap<String, Overbook> prices = new LinkedMultiValueMap<>();
 
-    public PortfolioDto addPosition(Account account, Positions positions) {
-        this.positions.addIfAbsent(account, positions);
+    public PortfolioDto addPosition(Account account, Position position) {
+        this.positions.addIfAbsent(account, position);
         return this;
     }
 
-    public PortfolioDto addPositions(Account account, List<Positions> positions) {
+    public PortfolioDto addPositions(Account account, List<Position> positions) {
         this.positions.addAll(account, positions);
         return this;
     }

@@ -1,0 +1,262 @@
+{
+  "trackingId": "59789b0eaf178a7e",
+  "payload": {
+    "positions": [
+      {
+        "figi": "BBG000GW06J7",
+        "ticker": "EBS",
+        "isin": "US29089Q1058",
+        "instrumentType": "Stock",
+        "balance": 1,
+        "lots": 1,
+        "expectedYield": {
+          "currency": "USD",
+          "value": -12.94
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 63.22
+        },
+        "name": "Emergent BioSolutions Inc"
+      },
+      {
+        "figi": "BBG005YHY0Q7",
+        "ticker": "JD",
+        "isin": "US47215P1066",
+        "instrumentType": "Stock",
+        "balance": 1,
+        "lots": 1,
+        "expectedYield": {
+          "currency": "USD",
+          "value": 6.45
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 73.48
+        },
+        "name": "JD.com"
+      },
+      {
+        "figi": "BBG000B9XRY4",
+        "ticker": "AAPL",
+        "isin": "US0378331005",
+        "instrumentType": "Stock",
+        "balance": 4,
+        "lots": 4,
+        "expectedYield": {
+          "currency": "USD",
+          "value": 153.32
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 110.73
+        },
+        "name": "Apple"
+      },
+      {
+        "figi": "BBG000BSJK37",
+        "ticker": "T",
+        "isin": "US00206R1023",
+        "instrumentType": "Stock",
+        "balance": 1,
+        "lots": 1,
+        "expectedYield": {
+          "currency": "USD",
+          "value": -4.43
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 29.84
+        },
+        "name": "AT&T"
+      },
+      {
+        "figi": "BBG0019T5SG0",
+        "ticker": "TDOC",
+        "isin": "US87918A1051",
+        "instrumentType": "Stock",
+        "balance": 1,
+        "lots": 1,
+        "expectedYield": {
+          "currency": "USD",
+          "value": 11.02
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 129.88
+        },
+        "name": "Teladoc Health Inc"
+      },
+      {
+        "figi": "BBG0077VNXV6",
+        "ticker": "PYPL",
+        "isin": "US70450Y1038",
+        "instrumentType": "Stock",
+        "balance": 1,
+        "lots": 1,
+        "expectedYield": {
+          "currency": "USD",
+          "value": -15.76
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 258
+        },
+        "name": "PayPal Holdings"
+      },
+      {
+        "figi": "BBG000BD8ZK0",
+        "ticker": "TSM",
+        "isin": "US8740391003",
+        "instrumentType": "Stock",
+        "balance": 1,
+        "lots": 1,
+        "expectedYield": {
+          "currency": "USD",
+          "value": 4.43
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 109.67
+        },
+        "name": "Taiwan Semiconductor Manufacturing"
+      },
+      {
+        "figi": "BBG003CVJP50",
+        "ticker": "BYND",
+        "isin": "US08862E1091",
+        "instrumentType": "Stock",
+        "balance": 4,
+        "lots": 4,
+        "expectedYield": {
+          "currency": "USD",
+          "value": -72.52
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 112.26
+        },
+        "name": "Beyond Meat Inc"
+      },
+      {
+        "figi": "BBG005F1DK91",
+        "ticker": "GTHX",
+        "isin": "US3621LQ1099",
+        "instrumentType": "Stock",
+        "balance": 5,
+        "lots": 5,
+        "expectedYield": {
+          "currency": "USD",
+          "value": -48.1
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 23.4
+        },
+        "name": "G1 Therapeutics Inc"
+      },
+      {
+        "figi": "BBG004S681B4",
+        "ticker": "NLMK",
+        "isin": "RU0009046452",
+        "instrumentType": "Stock",
+        "balance": 70,
+        "lots": 7,
+        "expectedYield": {
+          "currency": "RUB",
+          "value": 2698.2
+        },
+        "averagePositionPrice": {
+          "currency": "RUB",
+          "value": 190.48
+        },
+        "name": "НЛМК"
+      },
+      {
+        "figi": "BBG0047315Y7",
+        "ticker": "SBERP",
+        "isin": "RU0009029557",
+        "instrumentType": "Stock",
+        "balance": 20,
+        "lots": 2,
+        "expectedYield": {
+          "currency": "RUB",
+          "value": 1139.4
+        },
+        "averagePositionPrice": {
+          "currency": "RUB",
+          "value": 277.42
+        },
+        "name": "Сбер Банк - привилегированные акции"
+      },
+      {
+        "figi": "BBG00QPYJ5H0",
+        "ticker": "TCSG",
+        "isin": "TCS7238U2033",
+        "instrumentType": "Stock",
+        "balance": 1,
+        "lots": 1,
+        "expectedYield": {
+          "currency": "RUB",
+          "value": 3961.2
+        },
+        "averagePositionPrice": {
+          "currency": "RUB",
+          "value": 3223.6
+        },
+        "name": "TCS Group"
+      },
+      {
+        "figi": "BBG0016MQ7C5",
+        "ticker": "TPIC",
+        "isin": "US87266J1043",
+        "instrumentType": "Stock",
+        "balance": 1,
+        "lots": 1,
+        "expectedYield": {
+          "currency": "USD",
+          "value": -31.06
+        },
+        "averagePositionPrice": {
+          "currency": "USD",
+          "value": 64
+        },
+        "name": "TPI Composites Inc"
+      },
+      {
+        "figi": "BBG005VKB7D7",
+        "ticker": "FXCN",
+        "isin": "IE00BD3QFB18",
+        "instrumentType": "Etf",
+        "balance": 3,
+        "lots": 3,
+        "expectedYield": {
+          "currency": "RUB",
+          "value": -2323.5
+        },
+        "averagePositionPrice": {
+          "currency": "RUB",
+          "value": 3887.5
+        },
+        "name": "FinEx Акции китайских компаний"
+      },
+      {
+        "figi": "BBG0013HGFT4",
+        "ticker": "USD000UTSTOM",
+        "instrumentType": "Currency",
+        "balance": 232.33,
+        "lots": 0,
+        "expectedYield": {
+          "currency": "RUB",
+          "value": -569.14
+        },
+        "averagePositionPrice": {
+          "currency": "RUB",
+          "value": 72.7225
+        },
+        "name": "Доллар США"
+      }
+    ]
+  },
+  "status": "Ok"
+}

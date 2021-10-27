@@ -113,7 +113,8 @@ class PortfolioServiceTest {
     }
 
     @TestConfiguration
-    @ComponentScan(basePackages = {"com.home.project.portfolio.processor", "com.home.project.portfolio.service"})
+    @ComponentScan(basePackages = {"com.home.project.portfolio.processor", "com.home.project.portfolio.service",
+            "com.home.project.portfolio.calculation"})
     @EnableFeignClients(clients = TinkoffClient.class)
     @PropertySource(value = "classpath:application-test.yml", factory = YamlPropertySourceFactory.class)
     static class Config {
