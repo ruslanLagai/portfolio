@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface Calculator {
 
-    double calculateRevenue(List<Operation> operations);
+    double calculate(List<Operation> operations);
 }

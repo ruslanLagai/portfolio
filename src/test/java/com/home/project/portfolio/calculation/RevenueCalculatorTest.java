@@ -28,7 +28,7 @@ class RevenueCalculatorTest {
                 .filter(operation -> operation.getFigi() != null)
                 .filter(operation -> operation.getFigi().equals("BBG000N9MNX3"))
                 .collect(Collectors.toList());
-        var result = calculator.calculateRevenue(teslaOperations);
+        var result = calculator.calculate(teslaOperations);
         assertThat(result, Matchers.greaterThan(10.0));
     }
 
@@ -40,21 +40,21 @@ class RevenueCalculatorTest {
                 .filter(operation -> operation.getFigi() != null)
                 .filter(operation -> operation.getFigi().equals("BBG004RVFCY3"))
                 .collect(Collectors.toList());
-        var result = calculator.calculateRevenue(teslaOperations);
+        var result = calculator.calculate(teslaOperations);
         assertThat(result, Matchers.greaterThan(0.0));
     }
 
     @Test
     @DisplayName("Test empty list")
     void calculateRevenueEmptyList() {
-        var result = calculator.calculateRevenue(Collections.emptyList());
+        var result = calculator.calculate(Collections.emptyList());
         assertThat(result, Matchers.equalTo(0.0));
     }
 
     @Test
     @DisplayName("Test null param")
     void calculateRevenuenull() {
-        var result = calculator.calculateRevenue(null);
+        var result = calculator.calculate(null);
         assertThat(result, Matchers.equalTo(0.0));
     }
 

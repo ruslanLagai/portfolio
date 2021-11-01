@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
+import static com.home.project.portfolio.utils.Constants.FORMATTER;
 import static com.home.project.portfolio.utils.Constants.TINKOFF_API_DATE_TIME_FORMAT;
 
 /**
@@ -25,7 +26,6 @@ import static com.home.project.portfolio.utils.Constants.TINKOFF_API_DATE_TIME_F
 @Log4j2
 public class PortfolioService {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(TINKOFF_API_DATE_TIME_FORMAT);
     private final TinkoffClient tinkoffClient;
     private final List<OperationsProcessor> operationsProcessors;
     private final List<AccountProcessor> accountProcessors;

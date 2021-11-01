@@ -6,6 +6,7 @@ import com.home.project.portfolio.model.analytic.Period;
 import com.home.project.portfolio.model.operations.StockAvailability;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +44,11 @@ class PortfolioServiceTest {
 
     @Autowired
     PortfolioService portfolioService;
+
+    @BeforeEach
+    public void before() throws InterruptedException {
+        Thread.sleep(60000);
+    }
 
     @Test
     @DisplayName("test get portfolio")

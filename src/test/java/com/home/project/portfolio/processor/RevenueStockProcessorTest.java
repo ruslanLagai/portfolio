@@ -2,10 +2,9 @@ package com.home.project.portfolio.processor;
 
 import com.home.project.portfolio.calculation.RevenueCalculator;
 import com.home.project.portfolio.helpers.TestUtils;
+import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.operations.Operation;
-import com.home.project.portfolio.model.operations.Operations;
 import com.home.project.portfolio.model.operations.Status;
-import com.home.project.portfolio.model.response.StockDto;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,28 +14,19 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.home.project.portfolio.utils.OperationGroups.TRADING_OPERATIONS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Class to test {@link RevenueStockProcessor}
  */
 @ExtendWith(MockitoExtension.class)
-class RevenueStockProcessorTest {
-
-    private static final String AAPL = "AAPL";
-    private static final String SBERP = "SBERP";
-    private static final String AMZN = "AMZN";
-    public static final String ALEXION = "ALEXION";
-    private final RevenueCalculator calculator = new RevenueCalculator();
-    private final RevenueStockProcessor processor = new RevenueStockProcessor(calculator);
-    private static final Operations OPERATIONS = TestUtils.readOperations();
+class RevenueStockProcessorTest extends AbstractProcessorTest {
 
     private static final List<Operation> alexionOps = OPERATIONS
             .getPayload().getOperations().stream()
@@ -69,6 +59,9 @@ class RevenueStockProcessorTest {
             .filter(operation -> operation.getFigi().equals("BBG000BVPV84"))
             .collect(Collectors.toList());
 
+    private final RevenueCalculator calculator = new RevenueCalculator();
+    private final RevenueStockProcessor processor = new RevenueStockProcessor(calculator);
+
     @DisplayName("test empty positions")
     @Test
     void apply() {
@@ -76,12 +69,13 @@ class RevenueStockProcessorTest {
         map.put(ALEXION, alexionOps);
         map.put("BMRN", biomarinOps);
 
-        Map<String, StockDto> stringStockDtoMap = processor.apply(map, Collections.emptyList());
+        var analyticDataList = processor.apply(map, Collections.emptyList());
         assertAll(() -> {
-            assertFalse(stringStockDtoMap.isEmpty());
-            assertThat(stringStockDtoMap.get(ALEXION).getTicker(), Matchers.equalTo(ALEXION));
-            assertThat(stringStockDtoMap.get(ALEXION).getRevenue(), Matchers.greaterThan(0.0));
-            assertThat(stringStockDtoMap.get(ALEXION).getCommission(), Matchers.equalTo(0.0));
+            assertFalse(analyticDataList.isEmpty());
+            assertThat(analyticDataList.get(0).getTicker(), Matchers.equalTo(ALEXION));
+            assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(19.0));
+            assertThat(analyticDataList.get(0).getCurrency(), Matchers.equalTo(Currency.USD));
+            assertThat(analyticDataList.get(0).getCommission(), Matchers.equalTo(0.0));
         });
     }
 
@@ -96,21 +90,22 @@ class RevenueStockProcessorTest {
                 .filter(position -> position.getTicker().equals(AAPL) || position.getTicker().equals(SBERP))
                 .collect(Collectors.toList());
 
-        Map<String, StockDto> stringStockDtoMap = processor.apply(map, positions);
+        var analyticDataList = processor.apply(map, positions);
         assertAll(() -> {
-            assertFalse(stringStockDtoMap.isEmpty());
-            assertThat(stringStockDtoMap.get(AAPL).getTicker(), Matchers.equalTo(AAPL));
-            assertThat(stringStockDtoMap.get(AAPL).getRevenue(), Matchers.greaterThan(0.0));
-            assertThat(stringStockDtoMap.get(AAPL).getCommission(), Matchers.equalTo(0.0));
-            assertThat(stringStockDtoMap.get(AAPL).getFigi(), Matchers.equalTo("BBG000B9XRY4"));
+            assertFalse(analyticDataList.isEmpty());
+            assertThat(analyticDataList.get(0).getTicker(), Matchers.equalTo(AAPL));
+            assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1182.0));
+            assertThat(analyticDataList.get(0).getCurrency(), Matchers.equalTo(Currency.USD));
+            assertThat(analyticDataList.get(0).getCommission(), Matchers.equalTo(0.0));
+            assertThat(analyticDataList.get(0).getFigi(), Matchers.equalTo("BBG000B9XRY4"));
         });
         assertAll(() -> {
-            assertFalse(stringStockDtoMap.isEmpty());
-            assertThat(stringStockDtoMap.get(SBERP).getTicker(), Matchers.equalTo(SBERP));
-            assertThat(stringStockDtoMap.get(SBERP).getRevenue(), Matchers.greaterThan(0.0));
-            assertThat(stringStockDtoMap.get(SBERP).getCommission(), Matchers.equalTo(0.0));
-            assertThat(stringStockDtoMap.get(SBERP).getFigi(), Matchers.equalTo("BBG0047315Y7"));
-
+            assertFalse(analyticDataList.isEmpty());
+            assertThat(analyticDataList.get(1).getTicker(), Matchers.equalTo(SBERP));
+            assertThat(analyticDataList.get(1).getRevenue(), Matchers.equalTo(1190.0));
+            assertThat(analyticDataList.get(1).getCommission(), Matchers.equalTo(0.0));
+            assertThat(analyticDataList.get(1).getCurrency(), Matchers.equalTo(Currency.RUB));
+            assertThat(analyticDataList.get(1).getFigi(), Matchers.equalTo("BBG0047315Y7"));
         });
     }
 
@@ -121,26 +116,23 @@ class RevenueStockProcessorTest {
         MultiValueMap<String, Operation> map = new LinkedMultiValueMap<>();
         map.put(AAPL, aaplOps);
         map.put(AMZN, amznOps);
-        var positions = TestUtils.readPositions()
-                .getPayload().getPositions().stream()
-                .filter(position -> position.getTicker().equals(AAPL))
-                .collect(Collectors.toList());
 
-        Map<String, StockDto> stringStockDtoMap = processor.apply(map, positions);
+        var analyticDataList = processor.apply(map, AAPL_POSITIONS);
         assertAll(() -> {
-            assertFalse(stringStockDtoMap.isEmpty());
-            assertThat(stringStockDtoMap.get(AAPL).getTicker(), Matchers.equalTo(AAPL));
-            assertThat(stringStockDtoMap.get(AAPL).getRevenue(), Matchers.greaterThan(0.0));
-            assertThat(stringStockDtoMap.get(AAPL).getCommission(), Matchers.equalTo(0.0));
-            assertThat(stringStockDtoMap.get(AAPL).getFigi(), Matchers.equalTo("BBG000B9XRY4"));
+            assertFalse(analyticDataList.isEmpty());
+            assertThat(analyticDataList.get(0).getTicker(), Matchers.equalTo(AAPL));
+            assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1182.0));
+            assertThat(analyticDataList.get(0).getCommission(), Matchers.equalTo(0.0));
+            assertThat(analyticDataList.get(0).getCurrency(), Matchers.equalTo(Currency.USD));
+            assertThat(analyticDataList.get(0).getFigi(), Matchers.equalTo("BBG000B9XRY4"));
         });
         assertAll(() -> {
-            assertFalse(stringStockDtoMap.isEmpty());
-            assertThat(stringStockDtoMap.get(AMZN).getTicker(), Matchers.equalTo(AMZN));
-            assertThat(stringStockDtoMap.get(AMZN).getRevenue(), Matchers.greaterThan(0.0));
-            assertThat(stringStockDtoMap.get(AMZN).getCommission(), Matchers.equalTo(0.0));
-            assertThat(stringStockDtoMap.get(AMZN).getFigi(), Matchers.equalTo("BBG000BVPV84"));
-
+            assertFalse(analyticDataList.isEmpty());
+            assertThat(analyticDataList.get(1).getTicker(), Matchers.equalTo(AMZN));
+            assertThat(analyticDataList.get(1).getRevenue(), Matchers.greaterThan(537.0));
+            assertThat(analyticDataList.get(1).getCommission(), Matchers.equalTo(0.0));
+            assertThat(analyticDataList.get(0).getCurrency(), Matchers.equalTo(Currency.USD));
+            assertThat(analyticDataList.get(1).getFigi(), Matchers.equalTo("BBG000BVPV84"));
         });
     }
 }

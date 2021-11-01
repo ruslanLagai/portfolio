@@ -1,0 +1,69 @@
+package com.home.project.portfolio.processor;
+
+import com.home.project.portfolio.calculation.Calculator;
+import com.home.project.portfolio.model.analytic.ServiceCommission;
+import com.home.project.portfolio.model.operations.Operation;
+import com.home.project.portfolio.model.portfolio.Position;
+import com.home.project.portfolio.model.analytic.AnalyticData;
+import com.home.project.portfolio.utils.OperationGroups;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
+
+import java.util.*;
+import java.util.function.BiFunction;
+
+/**
+ * Processor for stocks that currently present in portfolio
+ */
+@Component
+@Log4j2
+public class CommissionStockProcessor implements AnalyticProcessor {
+
+    private static final BiFunction<Double, Operation, AnalyticData> STOCK_PROCESSOR =
+            (commission, operation) -> AnalyticData.builder()
+                    .ticker(operation.getTicker())
+                    .figi(operation.getFigi())
+                    .commission(commission)
+                    .isCommission(true)
+                    .currency(operation.getCurrency())
+                    .build();
+    private static final BiFunction<Double, Operation, AnalyticData> SERVICE_COMMISSION_PROCESSOR =
+            (commission, operation) -> AnalyticData.builder()
+                    .ticker(operation.getTicker())
+                    .serviceCommission(
+                            ServiceCommission.builder()
+                                    .currency(operation.getCurrency())
+                                    .commission(commission)
+                                    .build()
+                    )
+                    .build();
+
+    private final Calculator commissionCalculator;
+
+    public CommissionStockProcessor(Calculator commissionCalculator) {
+        this.commissionCalculator = commissionCalculator;
+    }
+
+    @Override
+    public List<AnalyticData> apply(MultiValueMap<String, Operation> operations,
+                                    List<Position> positions) {
+        List<AnalyticData> commission = new ArrayList<>();
+        log.info("Processing commission calculation");
+        operations.forEach((ticker, ops) -> commission.add(calculate(ticker, ops)));
+        return commission;
+    }
+
+    private AnalyticData calculate(String ticker, List<Operation> ops) {
+        var operation = ops.iterator().next();
+
+        //this is workaround as operations comes from finkoff without ticker
+        operation.setTicker(ticker);
+
+        var commission = commissionCalculator.calculate(ops);
+        log.info("Computed commission for {}, commission {}", ticker, commission);
+        return OperationGroups.COMMISSIONS.contains(operation.getOperationType())
+                ? SERVICE_COMMISSION_PROCESSOR.apply(commission, operation)
+                : STOCK_PROCESSOR.apply(commission, operation);
+    }
+}

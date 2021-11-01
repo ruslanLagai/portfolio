@@ -1,7 +1,5 @@
 package com.home.project.portfolio.model.analytic;
 
-import java.time.LocalDateTime;
-
 /**
  * Period that is used to retrieve operations
  */

@@ -1,23 +1,26 @@
 package com.home.project.portfolio.processor;
 
 import com.home.project.portfolio.calculation.Calculator;
+import com.home.project.portfolio.model.analytic.AnalyticData;
 import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.operations.Status;
 import com.home.project.portfolio.model.portfolio.Position;
-import com.home.project.portfolio.model.response.StockDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.*;
-import java.util.function.BiFunction;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Processor for stocks that currently present in portfolio
+ * Revenue processor for stocks
+ *  trades
+ *  dividends
  */
 @Component
 @Log4j2
@@ -30,9 +33,9 @@ public class RevenueStockProcessor implements AnalyticProcessor {
     }
 
     @Override
-    public Map<String, StockDto> apply(MultiValueMap<String, Operation> operations,
-                                       List<Position> positions) {
-        Map<String, StockDto> stockAnalysis = new HashMap<>();
+    public List<AnalyticData> apply(MultiValueMap<String, Operation> operations,
+                                    List<Position> positions) {
+        List<AnalyticData> analyticDataList = new ArrayList<>();
         log.info("Processing revenue calculation for stocks in portfolio, stocks in portfolio {}",
                 positions.size());
         var ownedOperations = extractOwnedOperations(operations, positions);
@@ -42,27 +45,20 @@ public class RevenueStockProcessor implements AnalyticProcessor {
                 log.debug("Removed {} owned operations, ticker {}", ownedOperations.get(ticker).size(),
                         ticker);
             }
-            var result = calculate(ticker, ops);
 
-            if (stockAnalysis.containsKey(ticker)) {
-                stockAnalysis.get(ticker).setRevenue(result.getRevenue());
-            } else {
-                stockAnalysis.put(ticker, result);
-            }
+            var operation = ops.iterator().next();
+            var revenue = revenueCalculator.calculate(ops);
+            log.info("Computed revenue for {}, revenue {}", ticker, revenue);
+
+            analyticDataList.add(AnalyticData.builder()
+                    .figi(operation.getFigi())
+                    .revenue(revenue)
+                    .isRevenue(true)
+                    .currency(operation.getCurrency())
+                    .ticker(ticker)
+                    .build());
         });
-        return stockAnalysis;
-    }
-
-    private StockDto calculate(String ticker, List<Operation> ops) {
-        var operation = ops.iterator().next();
-        var revenue = revenueCalculator.calculateRevenue(ops);
-        log.info("Computed revenue for {}, revenue {}", ticker, revenue);
-        return StockDto.builder()
-                .ticker(ticker)
-                .figi(operation.getFigi())
-                .revenue(revenue)
-                .currency(operation.getCurrency())
-                .build();
+        return analyticDataList;
     }
 
     private MultiValueMap<String, Operation> extractOwnedOperations(MultiValueMap<String, Operation> operations,
