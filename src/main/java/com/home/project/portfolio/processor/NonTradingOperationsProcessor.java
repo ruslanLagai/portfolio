@@ -2,16 +2,12 @@ package com.home.project.portfolio.processor;
 
 import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.OperationType;
-import com.home.project.portfolio.model.operations.Operations;
 import com.home.project.portfolio.model.response.OperationsDto;
 import com.home.project.portfolio.utils.OperationGroups;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 
 /**
@@ -58,8 +54,8 @@ public class NonTradingOperationsProcessor implements OperationsProcessor {
      * @param operationsDto - operationDto to populate
      */
     @Override
-    public void apply(Operations operations, OperationsDto operationsDto) {
-        operations.getPayload().getOperations().stream()
+    public void apply(List<Operation> operations, OperationsDto operationsDto) {
+        operations.stream()
                 .filter(operation -> NON_TRADING_OPERATIONS.contains(operation.getOperationType()))
                 .forEach(operation -> OPERATION_TYPE_PROCESSORS.get(operation.getOperationType())
                         .apply(operation, operationsDto));

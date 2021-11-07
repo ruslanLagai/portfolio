@@ -9,3 +9,17 @@ feign:
     config:
       default:
         loggerLevel: full
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.mysql.cj.jdbc.MysqlConnectionPoolDataSource
+    url: jfv
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: false
+    properties:
+      dialect: org.hibernate.dialect.MySQLDialect

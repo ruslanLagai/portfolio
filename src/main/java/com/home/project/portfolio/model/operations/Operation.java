@@ -2,7 +2,10 @@ package com.home.project.portfolio.model.operations;
 
 import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.InstrumentType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -12,6 +15,9 @@ import java.util.List;
  * Tinfoff api operation
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Operation {
     private long id;
     private Status status;

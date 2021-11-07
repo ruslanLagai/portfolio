@@ -32,6 +32,14 @@ public class TestUtils {
         }
     }
 
+    public static Operations readOperations(String path) {
+        try {
+            return readValue(path, Operations.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read operations file");
+        }
+    }
+
     public static Portfolio readPositions() {
         String resourcePath = "src/test/resources/testData/positions.json";
         try {
