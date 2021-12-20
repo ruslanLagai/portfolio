@@ -9,7 +9,7 @@ import java.util.List;
 public interface OperationRepository extends JpaRepository<OperationEntity, Long> {
 
     List<OperationEntity> getByAccountIdAndDateBetweenOrderByDateDesc(String accountId, ZonedDateTime start,
-                                                       ZonedDateTime end);
+                                                                      ZonedDateTime end);
 
     List<OperationEntity> getByAccountId(String accountId);
 }

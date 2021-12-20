@@ -3,8 +3,7 @@ package com.home.project.portfolio.utils;
 import com.home.project.portfolio.model.Currency;
 
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Constants to use
@@ -16,10 +15,31 @@ public class Constants {
     public static final String NO_FIGI = "noFigi";
     public static final String SERVICE_COMMISSION_USD = "serviceCommissionUsd";
     public static final String SERVICE_COMMISSION_RUB = "serviceCommissionRub";
-    public static final Map<Currency, String> CURRENCY_STRING_MAP = new HashMap<>();
+    public static final String PAY_IN_RUB = "payInRub";
+    public static final String PAY_IN_USD = "payInUsd";
+    public static final String PAY_IN_EUR = "payInEur";
+    public static final String PAY_OUT_USD = "payOutUsd";
+    public static final String PAY_OUT_RUB = "payOutRub";
+    public static final String PAY_OUT_EUR = "payOutEur";
+    public static final String TAX_RUB = "taxRub";
 
-    static {
-        CURRENCY_STRING_MAP.put(Currency.RUB, SERVICE_COMMISSION_RUB);
-        CURRENCY_STRING_MAP.put(Currency.USD, SERVICE_COMMISSION_USD);
-    }
+    public static final List<String> SPECIAL_TICKERS = Collections.unmodifiableList(Arrays.asList(
+            SERVICE_COMMISSION_USD,
+            SERVICE_COMMISSION_RUB,
+            PAY_IN_RUB,
+            PAY_IN_USD,
+            PAY_IN_EUR,
+            PAY_OUT_USD,
+            PAY_OUT_RUB,
+            PAY_OUT_EUR,
+            TAX_RUB
+    ));
+    public static final Map<Currency, String> CURRENCY_COMMISSION_MAP = Map.of(
+            Currency.RUB, SERVICE_COMMISSION_RUB,
+            Currency.USD, SERVICE_COMMISSION_USD
+    );
+    public static final Map<Currency, String> CURRENCY_PAYMENT_MAP = Map.of(
+            Currency.RUB, PAY_IN_RUB,
+            Currency.USD, SERVICE_COMMISSION_USD
+    );
 }

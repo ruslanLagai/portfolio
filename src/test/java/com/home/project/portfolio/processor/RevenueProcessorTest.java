@@ -23,10 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
- * Class to test {@link RevenueStockProcessor}
+ * Class to test {@link RevenueProcessor}
  */
 @ExtendWith(MockitoExtension.class)
-class RevenueStockProcessorTest extends AbstractProcessorTest {
+class RevenueProcessorTest extends AbstractProcessorTest {
 
     private static final List<Operation> alexionOps = OPERATIONS
             .getPayload().getOperations().stream()
@@ -60,7 +60,7 @@ class RevenueStockProcessorTest extends AbstractProcessorTest {
             .collect(Collectors.toList());
 
     private final RevenueCalculator calculator = new RevenueCalculator();
-    private final RevenueStockProcessor processor = new RevenueStockProcessor(calculator);
+    private final RevenueProcessor processor = new RevenueProcessor(calculator);
 
     @DisplayName("test empty positions")
     @Test
@@ -121,7 +121,7 @@ class RevenueStockProcessorTest extends AbstractProcessorTest {
         assertAll(() -> {
             assertFalse(analyticDataList.isEmpty());
             assertThat(analyticDataList.get(0).getTicker(), Matchers.equalTo(AAPL));
-            assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1182.0));
+            assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1060.0));
             assertThat(analyticDataList.get(0).getCommission(), Matchers.equalTo(0.0));
             assertThat(analyticDataList.get(0).getCurrency(), Matchers.equalTo(Currency.USD));
             assertThat(analyticDataList.get(0).getFigi(), Matchers.equalTo("BBG000B9XRY4"));

@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
  * Class to test {@link CommissionCalculator}
  */
 @ExtendWith(MockitoExtension.class)
-class CommissionStockProcessorTest extends AbstractProcessorTest {
+class CommissionProcessorTest extends AbstractProcessorTest {
 
     private static final List<Operation> COMMISSIONS_RUB = OPERATIONS
             .getPayload().getOperations().stream()
@@ -54,7 +54,7 @@ class CommissionStockProcessorTest extends AbstractProcessorTest {
             .collect(Collectors.toList());
 
     CommissionCalculator calculator = new CommissionCalculator();
-    CommissionStockProcessor processor = new CommissionStockProcessor(calculator);
+    CommissionProcessor processor = new CommissionProcessor(calculator);
 
     @Test
     @DisplayName("Calculate commission - AAPL")

@@ -4,6 +4,7 @@ import com.home.project.portfolio.client.TinkoffClient;
 import com.home.project.portfolio.helpers.TestUtils;
 import com.home.project.portfolio.model.analytic.Period;
 import com.home.project.portfolio.model.entity.OperationEntity;
+import com.home.project.portfolio.model.operations.Instrument;
 import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.Operations;
 import com.home.project.portfolio.repository.OperationRepository;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -24,12 +26,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.home.project.portfolio.utils.Profiles.CUSTOM_DB_TEST_PROFILE;
+import static com.home.project.portfolio.utils.Profiles.TEST_PROFILE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+@ActiveProfiles(value = {CUSTOM_DB_TEST_PROFILE, TEST_PROFILE})
 @Testcontainers
 @ExtendWith(SpringExtension.class)
 @DisplayName("Test retrieving operations")
@@ -96,6 +101,7 @@ class OperationsServiceTest extends AbstractDbTest {
     @DisplayName("Test operations in DB")
     void a2getLastOperations() {
         when(tinkoffClient.getOperations(any(), any(), eq(ACCOUNT_ID))).thenReturn(restOperations);
+        when(tinkoffClient.getInstrumentInfoByFigi(any())).thenReturn(new Instrument());
 
         var result = operationsService.getLastOperations(ACCOUNT_ID, Period.LAST_SIX_MONTH);
         var savedOperations = operationRepository.getByAccountId(ACCOUNT_ID);
@@ -110,6 +116,8 @@ class OperationsServiceTest extends AbstractDbTest {
     @DisplayName("Test no operations in DB")
     void a3getLastOperations() {
         when(tinkoffClient.getOperations(any(), any(), eq(ACCOUNT_ID))).thenReturn(restOperations);
+        when(tinkoffClient.getInstrumentInfoByFigi(any())).thenReturn(new Instrument());
+
         operationRepository.deleteAll();
 
         var result = operationsService.getLastOperations(ACCOUNT_ID, Period.LAST_SIX_MONTH);

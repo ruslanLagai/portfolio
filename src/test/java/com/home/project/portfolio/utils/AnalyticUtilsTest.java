@@ -14,6 +14,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@DisplayName("Test analytic utils")
 class AnalyticUtilsTest {
 
     private static final String TICKER = "ticker";
@@ -76,6 +77,7 @@ class AnalyticUtilsTest {
                 .build();
         var data3 = AnalyticData.builder()
                 .ticker(Constants.SERVICE_COMMISSION_USD)
+                .isServiceCommission(true)
                 .serviceCommission(ServiceCommission.builder()
                         .commission(10.0)
                         .currency(Currency.USD)
@@ -83,6 +85,7 @@ class AnalyticUtilsTest {
                 .build();
         var data4 = AnalyticData.builder()
                 .ticker(Constants.SERVICE_COMMISSION_RUB)
+                .isServiceCommission(true)
                 .serviceCommission(ServiceCommission.builder()
                         .commission(100.0)
                         .currency(Currency.RUB)

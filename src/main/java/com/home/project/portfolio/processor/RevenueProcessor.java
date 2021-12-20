@@ -1,11 +1,13 @@
 package com.home.project.portfolio.processor;
 
 import com.home.project.portfolio.calculation.Calculator;
+import com.home.project.portfolio.model.InstrumentType;
 import com.home.project.portfolio.model.analytic.AnalyticData;
 import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.operations.Status;
 import com.home.project.portfolio.model.portfolio.Position;
+import com.home.project.portfolio.utils.Constants;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -15,20 +17,21 @@ import org.springframework.util.MultiValueMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Revenue processor for stocks
- *  trades
- *  dividends
+ * trades
+ * dividends
  */
 @Component
 @Log4j2
-public class RevenueStockProcessor implements AnalyticProcessor {
+public class RevenueProcessor implements AnalyticProcessor {
 
     private final Calculator revenueCalculator;
 
-    public RevenueStockProcessor(Calculator revenueCalculator) {
+    public RevenueProcessor(Calculator revenueCalculator) {
         this.revenueCalculator = revenueCalculator;
     }
 
@@ -39,17 +42,31 @@ public class RevenueStockProcessor implements AnalyticProcessor {
         log.info("Processing revenue calculation for stocks in portfolio, stocks in portfolio {}",
                 positions.size());
         var ownedOperations = extractOwnedOperations(operations, positions);
-        operations.forEach((ticker, ops) -> {
+        for (Map.Entry<String, List<Operation>> entry : operations.entrySet()) {
+            var ticker = entry.getKey();
+            var ops = entry.getValue();
+            if (ops.iterator().hasNext() && ops.iterator().next().getInstrumentType().equals(InstrumentType.CURRENCY)) {
+                log.debug("Skipping currencies");
+                continue;
+            }
             if (!CollectionUtils.isEmpty(ownedOperations.get(ticker))) {
                 ops.removeAll(ownedOperations.get(ticker));
                 log.debug("Removed {} owned operations, ticker {}", ownedOperations.get(ticker).size(),
                         ticker);
             }
 
-            var operation = ops.iterator().next();
-            var revenue = revenueCalculator.calculate(ops);
+            var tradingOperations = ops.stream()
+                    .filter(operation -> !Constants.SPECIAL_TICKERS.contains(operation.getTicker()))
+                    .filter(operation -> operation.getFigi() != null)
+                    .filter(operation -> operation.getOperationType().equals(OperationType.SELL)
+                            || operation.getOperationType().equals(OperationType.BUY)
+                            || operation.getOperationType().equals(OperationType.BUY_CARD))
+                    .collect(Collectors.toList());
+
+            var revenue = revenueCalculator.calculate(tradingOperations);
             log.info("Computed revenue for {}, revenue {}", ticker, revenue);
 
+            var operation = tradingOperations.stream().findAny().orElse(new Operation());
             analyticDataList.add(AnalyticData.builder()
                     .figi(operation.getFigi())
                     .revenue(revenue)
@@ -57,7 +74,7 @@ public class RevenueStockProcessor implements AnalyticProcessor {
                     .currency(operation.getCurrency())
                     .ticker(ticker)
                     .build());
-        });
+        }
         return analyticDataList;
     }
 
@@ -72,7 +89,9 @@ public class RevenueStockProcessor implements AnalyticProcessor {
                 log.info("Processing owned stock, ticker {}", ticker);
                 var ownedStocksNumber = positions.stream()
                         .filter(position -> position.getTicker().equals(ticker))
-                        .map(Position::getLots)
+                        .filter(position -> position.getLots() != 0)
+                        .map(Position::getBalance)
+                        .map(Double::intValue)
                         .findFirst()
                         .orElse(0);
                 log.debug("Owned stocks number {}, ticker {}", ownedStocksNumber, ticker);
@@ -82,9 +101,29 @@ public class RevenueStockProcessor implements AnalyticProcessor {
                                 || operation.getOperationType().equals(OperationType.BUY_CARD))
                         .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                         .collect(Collectors.toList());
-                ownedOperations.addAll(ticker, sortedOperations.subList(0, ownedStocksNumber));
+
+                var index = getFirstOwnedOperationIndex(ownedStocksNumber, sortedOperations);
+                ownedOperations.addAll(ticker, sortedOperations.subList(0, index + 1));
+
             }
         });
         return ownedOperations;
+    }
+
+    private int getFirstOwnedOperationIndex(Integer ownedStocksNumber, List<Operation> sortedOperations) {
+        int sum = 0;
+        int index = 0;
+        for (Operation sortedOperation : sortedOperations) {
+            sum += sortedOperation.getQuantity();
+            if (sum == ownedStocksNumber) {
+                index = sortedOperations.indexOf(sortedOperation);
+                break;
+            }
+            if (sum > ownedStocksNumber) {
+                log.error("Incorrect number of owned positions");
+                break;
+            }
+        }
+        return index;
     }
 }

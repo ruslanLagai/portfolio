@@ -72,6 +72,7 @@ class PortfolioServiceTest {
         });
     }
 
+    @Profile(TEST_PROFILE)
     @TestConfiguration
     @ComponentScan(basePackages = {"com.home.project.portfolio.processor",
             "com.home.project.portfolio.calculation"},

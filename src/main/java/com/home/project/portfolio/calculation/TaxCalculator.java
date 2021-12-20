@@ -10,25 +10,23 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 /**
- * Class to calculate commission for instrument
+ * Class to calculate taxes for instrument
  */
 @Component
 @Log4j2
-public class CommissionCalculator implements Calculator {
+public class TaxCalculator implements Calculator {
 
     /**
-     *
      * @param operations - list of operations on particular ticker
      */
     @Override
     public double calculate(List<Operation> operations) {
         if (CollectionUtils.isEmpty(operations)) {
-            log.warn("Empty or null list of operations");
             return 0.0;
         }
         return operations.stream()
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
-                .filter(operation -> OperationGroups.COMMISSIONS.contains(operation.getOperationType()))
+                .filter(operation -> OperationGroups.TAXES.contains(operation.getOperationType()))
                 .map(operation -> Math.abs(operation.getPayment()))
                 .reduce(0.0, Double::sum);
     }

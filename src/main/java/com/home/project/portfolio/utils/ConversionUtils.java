@@ -9,8 +9,8 @@ import java.util.*;
 
 /**
  * Utility class to perform conversions
- *  Tinkoff rest operation -> DB operation
- *  DB operation -> Tinkoff rest operation
+ * Tinkoff rest operation -> DB operation
+ * DB operation -> Tinkoff rest operation
  */
 public class ConversionUtils {
 
@@ -71,7 +71,7 @@ public class ConversionUtils {
     public static Set<Trade> convertToDbTrades(Collection<com.home.project.portfolio.model.operations.Trade> restTrades,
                                                Operation operation) {
         if (restTrades == null) {
-             return null;
+            return null;
         }
         Set<Trade> trades = new HashSet<>();
         restTrades.forEach(trade -> {

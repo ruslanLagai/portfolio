@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * Utility class to process portfolio analytics
@@ -15,33 +16,59 @@ import java.util.Map;
 @Log4j2
 public class AnalyticUtils {
 
+    private static final BiFunction<AnalyticData, AnalyticDto, String> processCommission = (data, analyticDto) -> {
+        analyticDto.getServiceCommission().add(data.getServiceCommission());
+        return null;
+    };
+    private static final BiFunction<AnalyticData, AnalyticDto, String> processTax = (data, analyticDto) -> {
+        analyticDto.getTaxes().addAll(data.getTaxes());
+        return null;
+    };
+    private static final BiFunction<AnalyticData, AnalyticDto, String> processPayment = (data, analyticDto) -> {
+        analyticDto.getPayments().addAll(data.getPayment());
+        return null;
+    };
+    private static final BiFunction<AnalyticData, Map<String, AnalyticData>, String> processTradeOperation = (data, map) -> {
+        if (!map.containsKey(data.getTicker())) {
+            var toPut = AnalyticData.builder()
+                    .commission(data.isCommission() ? data.getCommission() : 0.0)
+                    .revenue(data.isRevenue() ? data.getRevenue() : 0.0)
+                    .ticker(data.getTicker())
+                    .currency(data.getCurrency())
+                    .figi(data.getFigi())
+                    .build();
+            map.put(data.getTicker(), toPut);
+        } else {
+            var toUpdate = map.get(data.getTicker());
+            if (data.isRevenue()) {
+                toUpdate.setRevenue(data.getRevenue());
+            } else if (data.isCommission()) {
+                toUpdate.setCommission(data.getCommission());
+            }
+        }
+
+        return null;
+    };
+
     public static AnalyticDto mergeAnalyticData(List<AnalyticData> dataList) {
         var analyticDto = new AnalyticDto();
-        List<AnalyticData> analyticDtoList = new ArrayList<>();
-        Map<String, Integer> map = new HashMap<>();
+        Map<String, AnalyticData> map = new HashMap<>();
         dataList.forEach(data -> {
-            if (data.getServiceCommission() != null) {
-                analyticDto.getServiceCommission().add(data.getServiceCommission());
-            } else if (!map.containsKey(data.getTicker())) {
-                var toPut = AnalyticData.builder()
-                        .commission(data.isCommission() ? data.getCommission() : 0.0)
-                        .revenue(data.isRevenue() ? data.getRevenue() : 0.0)
-                        .ticker(data.getTicker())
-                        .currency(data.getCurrency())
-                        .figi(data.getFigi())
-                        .build();
-                analyticDtoList.add(toPut);
-                map.put(data.getTicker(), analyticDtoList.indexOf(toPut));
-            } else if (map.containsKey(data.getTicker())) {
-                var toUpdate = analyticDtoList.get(map.get(data.getTicker()));
-                if (data.isRevenue()) {
-                    toUpdate.setRevenue(data.getRevenue());
-                } else if (data.isCommission()) {
-                    toUpdate.setCommission(data.getCommission());
-                }
+            var nonTradingProcessor = getNonTradingProcessor(data);
+            if (nonTradingProcessor != null) {
+                nonTradingProcessor.apply(data, analyticDto);
+            } else {
+                processTradeOperation.apply(data, map);
             }
         });
-        analyticDto.setAnalyticData(analyticDtoList);
+        analyticDto.setAnalyticData(new ArrayList<>(map.values()));
         return analyticDto;
+    }
+
+    private static BiFunction<AnalyticData, AnalyticDto, String> getNonTradingProcessor(AnalyticData data) {
+        return data.isServiceCommission() ? processCommission
+                : data.isTaxes() ? processTax
+                : data.isPayment() ? processPayment
+                : null;
     }
 }

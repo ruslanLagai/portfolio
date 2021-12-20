@@ -5,6 +5,7 @@ import com.home.project.portfolio.model.analytic.Period;
 import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.repository.OperationRepository;
 import com.home.project.portfolio.utils.ConversionUtils;
+import com.home.project.portfolio.utils.ExecutorServiceUtils;
 import feign.FeignException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.home.project.portfolio.utils.Constants.FORMATTER;
@@ -66,7 +68,9 @@ public class OperationsService {
                 log.debug("Retrieved new {} operations", payload.size());
                 operations.addAll(payload);
 
-                operationRepository.saveAll(ConversionUtils.convertToDbOperations(payload, accountId));
+                ConversionUtils.convertToDbOperations(payload, accountId)
+                        .forEach(operationEntity -> ExecutorServiceUtils.execute(() ->
+                                operationRepository.save(operationEntity), Executors.newSingleThreadExecutor()));
             }
         } catch (FeignException e) {
             log.error("Failed to retrieve latest operations for account {}, status code {}, \nException: {}",

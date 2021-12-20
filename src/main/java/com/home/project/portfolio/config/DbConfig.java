@@ -1,5 +1,6 @@
 package com.home.project.portfolio.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -23,9 +24,25 @@ import javax.sql.DataSource;
 @Configuration
 public class DbConfig {
 
+    @Value("${spring.datasource.url}")
+    private String url;
+
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String password;
+
+    @Value("${spring.datasource.driver-class-name}")
+    private String driver;
+
     @Bean
     public DataSource dataSource() {
         return DataSourceBuilder.create()
+                .url(url)
+                .password(password)
+                .username(username)
+                .driverClassName(driver)
                 .build();
     }
 
@@ -38,7 +55,7 @@ public class DbConfig {
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setJpaDialect(new HibernateJpaDialect());
-        factory.setPackagesToScan("com.home.project.portfolio.repository");
+        factory.setPackagesToScan("com.home.project.portfolio.model.entity");
         factory.setDataSource(dataSource);
         return factory;
     }

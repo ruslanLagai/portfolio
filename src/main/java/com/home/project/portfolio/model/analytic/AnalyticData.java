@@ -6,14 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Class to store financial results on stock:
- *  revenue
- *  commission
- *
+ * revenue
+ * commission
  */
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnalyticData {
@@ -23,8 +24,13 @@ public class AnalyticData {
     private double commission;
     private Currency currency;
     private ServiceCommission serviceCommission;
+    private List<Payment> payment;
+    private List<Taxes> taxes;
     private boolean isCommission;
     private boolean isRevenue;
+    private boolean isServiceCommission;
+    private boolean isPayment;
+    private boolean isTaxes;
 
     public boolean isCommission() {
         return isCommission;
@@ -34,5 +40,15 @@ public class AnalyticData {
         return isRevenue;
     }
 
+    public boolean isServiceCommission() {
+        return isServiceCommission;
+    }
 
+    public boolean isPayment() {
+        return isPayment;
+    }
+
+    public boolean isTaxes() {
+        return isTaxes;
+    }
 }

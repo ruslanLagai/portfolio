@@ -1,6 +1,7 @@
 package com.home.project.portfolio.service;
 
 import com.home.project.portfolio.model.Currency;
+import com.home.project.portfolio.model.InstrumentType;
 import com.home.project.portfolio.model.entity.StockMetadata;
 import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.OperationType;
@@ -10,15 +11,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static com.home.project.portfolio.utils.Profiles.CUSTOM_DB_TEST_PROFILE;
+import static com.home.project.portfolio.utils.Profiles.TEST_PROFILE;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Class to test {@link StockHelperService}
  */
+@ActiveProfiles(value = {CUSTOM_DB_TEST_PROFILE, TEST_PROFILE})
+@DisplayName("Test helper service")
 @Testcontainers
 @ContextConfiguration(classes = AbstractDbTest.Config.class)
 @ExtendWith(SpringExtension.class)
@@ -37,19 +44,28 @@ class StockHelperServiceTest extends AbstractDbTest {
     @Test
     @DisplayName("test rest - stock")
     void findTicker() {
-        var result = helperService.findTicker(mockOperation("BBG000B9XRY4", OperationType.BUY, Currency.USD));
-        assertEquals("AAPL", result);
+        var result = helperService.findTicker(mockOperation("BBG004S681B4", OperationType.BUY, Currency.RUB));
+        var saved = stockRepository.getByFigi("BBG004S681B4");
+        assertEquals("NLMK", result);
+        assertAll(() -> {
+            assertEquals("NLMK", saved.getTicker());
+            assertEquals("BBG004S681B4", saved.getFigi());
+            assertEquals("RU0009046452", saved.getIsin());
+            assertEquals("НЛМК", saved.getName());
+            assertEquals(InstrumentType.STOCK, saved.getInstrumentType());
+
+        });
     }
 
     @Test
-    @DisplayName("test rest - USD service commission")
+    @DisplayName("test - USD service commission")
     void findTickerTest() {
         var result = helperService.findTicker(mockOperation(null, OperationType.SERVICE_COMMISSION, Currency.USD));
         assertEquals(Constants.SERVICE_COMMISSION_USD, result);
     }
 
     @Test
-    @DisplayName("test rest - RUB service commission")
+    @DisplayName("test - RUB service commission")
     void findTickerTestRub() {
         var result = helperService.findTicker(mockOperation(null, OperationType.SERVICE_COMMISSION, Currency.RUB));
         assertEquals(Constants.SERVICE_COMMISSION_RUB, result);

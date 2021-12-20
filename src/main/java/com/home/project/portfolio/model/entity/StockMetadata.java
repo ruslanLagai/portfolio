@@ -1,8 +1,7 @@
 package com.home.project.portfolio.model.entity;
 
 import com.home.project.portfolio.model.InstrumentType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,9 +11,12 @@ import javax.persistence.Id;
 @Entity(name = "ENTITY_METADATA")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class StockMetadata {
 
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
 
