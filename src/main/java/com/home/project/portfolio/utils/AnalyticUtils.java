@@ -25,7 +25,13 @@ public class AnalyticUtils {
         return null;
     };
     private static final BiFunction<AnalyticData, AnalyticDto, String> processPayment = (data, analyticDto) -> {
-        analyticDto.getPayments().addAll(data.getPayment());
+        data.getPayment().forEach(payment ->
+                analyticDto.getPayments().stream()
+                        .filter(p -> p.getCurrency().equals(payment.getCurrency()))
+                        .filter(p -> p.getOperationType().equals(payment.getOperationType()))
+                        .findFirst()
+                        .ifPresentOrElse(p -> p.setPayment(p.getPayment() + payment.getPayment()),
+                                () -> analyticDto.getPayments().add(payment)));
         return null;
     };
     private static final BiFunction<AnalyticData, Map<String, AnalyticData>, String> processTradeOperation = (data, map) -> {

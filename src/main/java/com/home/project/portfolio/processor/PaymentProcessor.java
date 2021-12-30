@@ -10,11 +10,10 @@ import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.utils.OperationGroups;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,15 +34,15 @@ public class PaymentProcessor implements AnalyticProcessor {
     @Override
     public List<AnalyticData> apply(MultiValueMap<String, Operation> operations,
                                     List<Position> positions) {
-        AnalyticData analyticData = null;
+        List<AnalyticData> analyticData = new ArrayList<>();
         log.info("Processing payments calculation");
 
         for (Map.Entry<String, List<Operation>> entry : operations.entrySet()) {
             if (entry.getKey() != null && OperationGroups.PAYMENT_TICKERS.contains(entry.getKey())) {
-                analyticData = calculate(entry.getValue());
+                analyticData.add(calculate(entry.getValue()));
             }
         }
-        return analyticData != null ? Collections.singletonList(analyticData) : Collections.emptyList();
+        return analyticData;
     }
 
     private AnalyticData calculate(List<Operation> ops) {

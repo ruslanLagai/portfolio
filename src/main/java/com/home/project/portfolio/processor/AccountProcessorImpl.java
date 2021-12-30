@@ -37,7 +37,7 @@ public class AccountProcessorImpl implements AccountProcessor {
                 .filter(p -> p.getPayload() != null)
                 .peek(p -> {
                     log.info("Retrieved {} positions", portfolio.getPayload().getPositions().size());
-                    portfolioDto.addPositions(account, portfolio.getPayload().getPositions());
+                    portfolioDto.addPositions(account.getBrokerAccountId(), portfolio.getPayload().getPositions());
                 })
                 .forEach(p -> p.getPayload().getPositions()
                         .forEach(positions -> {

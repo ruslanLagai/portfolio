@@ -45,7 +45,8 @@ public class RevenueProcessor implements AnalyticProcessor {
         for (Map.Entry<String, List<Operation>> entry : operations.entrySet()) {
             var ticker = entry.getKey();
             var ops = entry.getValue();
-            if (ops.iterator().hasNext() && ops.iterator().next().getInstrumentType().equals(InstrumentType.CURRENCY)) {
+            if (ops.iterator().hasNext() && ops.iterator().next().getInstrumentType() != null
+                    && ops.iterator().next().getInstrumentType().equals(InstrumentType.CURRENCY)) {
                 log.debug("Skipping currencies");
                 continue;
             }

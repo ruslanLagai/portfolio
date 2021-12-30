@@ -105,7 +105,7 @@ public class StockHelperService {
                                 Executors.newSingleThreadExecutor()));
                 ticker = response.map(Instrument.Payload::getTicker).orElse(null);
             } catch (FeignException e) {
-                log.error("Failed to get stock metadata, figi {}", operation.getFigi());
+                log.error("Failed to get stock metadata, figi {}. Exception {}", operation.getFigi(), e.getMessage());
             }
 
         }

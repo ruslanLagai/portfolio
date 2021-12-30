@@ -14,16 +14,11 @@ import java.util.*;
  */
 @Data
 public class PortfolioDto {
-    private MultiValueMap<Account, Position> positions = new LinkedMultiValueMap<>();
+    private MultiValueMap<String, Position> positions = new LinkedMultiValueMap<>();
     private MultiValueMap<String, Overbook> prices = new LinkedMultiValueMap<>();
 
-    public PortfolioDto addPosition(Account account, Position position) {
-        this.positions.addIfAbsent(account, position);
-        return this;
-    }
-
-    public PortfolioDto addPositions(Account account, List<Position> positions) {
-        this.positions.addAll(account, positions);
+    public PortfolioDto addPositions(String accountId, List<Position> positions) {
+        this.positions.addAll(accountId, positions);
         return this;
     }
 
