@@ -14,5 +14,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AveragePositionItem {
     private Currency currency;
-    private int value;
+    private double value;
 }

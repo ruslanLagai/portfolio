@@ -1,8 +1,23 @@
 tinkoff:
   api:
-    token: t.Dt6WTC41lKyNtXTOGP0zBDPvFaq-QuLeG2G_dCwQxyBeHhhBCnLX1_404krmeRHwvWvHcEvEJLzalzWKvej24A
+    token: TBA
     url: https://api-invest.tinkoff.ru/openapi
 
 server:
   servlet:
     context-path:
+  port: 8081
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.mysql.cj.jdbc.MysqlConnectionPoolDataSource
+    url: jdbc:mysql://localhost:3307/portfolio?useSSL=false
+    username: db_user
+    password: j&4>TqA2
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: create-drop

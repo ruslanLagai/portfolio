@@ -104,7 +104,7 @@ public class RevenueProcessor implements AnalyticProcessor {
                         .collect(Collectors.toList());
 
                 var index = getFirstOwnedOperationIndex(ownedStocksNumber, sortedOperations);
-                ownedOperations.addAll(ticker, sortedOperations.subList(0, index + 1));
+                ownedOperations.addAll(ticker, sortedOperations.subList(0, index != 0 ? index + 1 : index));
 
             }
         });

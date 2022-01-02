@@ -1,0 +1,17 @@
+tinkoff:
+  api:
+    token: TBA
+    url: https://api-invest.tinkoff.ru/openapi
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.mysql.cj.jdbc.MysqlConnectionPoolDataSource
+
+  main:
+    allow-bean-definition-overriding: true
