@@ -1,20 +1,19 @@
 tinkoff:
   api:
-    token: TBA
+    token: ${TINKOFF_API_TOKEN}
     url: https://api-invest.tinkoff.ru/openapi
 
 server:
   servlet:
     context-path:
-  port: 8081
+  port: ${SPRING_DOCKER_PORT}
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.mysql.cj.jdbc.MysqlConnectionPoolDataSource
-    url: jdbc:mysql://localhost:3307/portfolio?useSSL=false
-    username: db_user
-    password: j&4>TqA2
+    url: jdbc:mysql://localhost:3307/portfolio
+
   jpa:
     properties:
       hibernate:
