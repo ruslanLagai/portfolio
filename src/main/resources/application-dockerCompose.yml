@@ -1,6 +1,6 @@
 tinkoff:
   api:
-    token: TBA
+    token: ${TINKOFF_API_TOKEN}
     url: https://api-invest.tinkoff.ru/openapi
 
 feign:

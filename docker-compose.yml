@@ -6,9 +6,10 @@ services:
       context: .
       dockerfile: Dockerfile
       network: none
-    container_name: portfolio
+    container_name: tportfolio_api
     env_file:
       - .env
+      - .env.private
     environment:
       SPRING_APPLICATION_JSON: '{
                   "spring.datasource.url"  : "jdbc:mysql://mysql_db:$MYSQL_DOCKER_PORT/$MYSQL_DATABASE?useSSL=false&allowPublicKeyRetrieval=true",
@@ -31,7 +32,7 @@ services:
     networks:
       - local
     ports:
-      - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+      - ${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}
     depends_on:
       - mysql_db
     restart: on-failure
@@ -40,7 +41,7 @@ services:
   mysql_db:
     networks:
       - local
-    container_name: mysql_db
+    container_name: tportfolio_mysql_db
     image: library/mysql:8.0
 #    dns:
     mem_reservation: 1G
@@ -48,13 +49,14 @@ services:
       - storage:/opt/data
     env_file:
       - .env
+      - .env.private
     ports:
       - ${MYSQL_LOCAL_PORT}:${MYSQL_DOCKER_PORT}
     environment:
-      MYSQL_USER: db_user
-      MYSQL_PASSWORD: j&4$R>TqA2
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: j&4$R>TqA2
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
 volumes:
   storage:
 networks:
