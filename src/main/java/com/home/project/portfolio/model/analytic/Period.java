@@ -48,7 +48,7 @@ public enum Period {
             return false;
         }
     },
-    LAST_SIX_MONTH("month") {
+    LAST_SIX_MONTH("six_months") {
         @Override
         public java.time.Period getPeriodDuration() {
             return java.time.Period.ofMonths(6);
