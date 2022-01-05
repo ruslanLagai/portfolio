@@ -1,14 +1,7 @@
-tinkoff:
-  api:
-    token: ${TINKOFF_API_TOKEN}
-    url: https://api-invest.tinkoff.ru/openapi
-
-server:
-  servlet:
-    context-path:
-  port: ${SPRING_DOCKER_PORT}
-
 spring:
+  config:
+    import: file:.properties,optional:file:.private.properties
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.mysql.cj.jdbc.MysqlConnectionPoolDataSource
@@ -20,3 +13,13 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: create-drop
+
+tinkoff:
+  api:
+    token: ${TINKOFF_API_TOKEN}
+    url: https://api-invest.tinkoff.ru/openapi
+
+server:
+  servlet:
+    context-path:
+  port: ${SPRING_DOCKER_PORT}
