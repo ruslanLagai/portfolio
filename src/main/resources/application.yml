@@ -6,13 +6,15 @@ tinkoff:
 server:
   servlet:
     context-path:
-  port: ${SPRING_DOCKER_PORT}
+  port: 8080
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.mysql.cj.jdbc.MysqlConnectionPoolDataSource
     url: jdbc:mysql://localhost:3307/portfolio
+    username: db_user
+    password: j&4>TqA2
 
   jpa:
     properties:

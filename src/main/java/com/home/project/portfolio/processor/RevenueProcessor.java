@@ -72,6 +72,7 @@ public class RevenueProcessor implements AnalyticProcessor {
                     .figi(operation.getFigi())
                     .revenue(revenue)
                     .isRevenue(true)
+                    .instrumentType(operation.getInstrumentType())
                     .currency(operation.getCurrency())
                     .ticker(ticker)
                     .build());

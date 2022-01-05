@@ -1,6 +1,7 @@
 package com.home.project.portfolio.model.analytic;
 
 import com.home.project.portfolio.model.Currency;
+import com.home.project.portfolio.model.InstrumentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class AnalyticData {
     private boolean isServiceCommission;
     private boolean isPayment;
     private boolean isTaxes;
+    private InstrumentType instrumentType;
 
     public boolean isCommission() {
         return isCommission;

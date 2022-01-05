@@ -40,6 +40,7 @@ public class AnalyticUtils {
                     .commission(data.isCommission() ? data.getCommission() : 0.0)
                     .revenue(data.isRevenue() ? data.getRevenue() : 0.0)
                     .ticker(data.getTicker())
+                    .instrumentType(data.getInstrumentType())
                     .currency(data.getCurrency())
                     .figi(data.getFigi())
                     .build();

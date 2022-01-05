@@ -1,6 +1,6 @@
 package com.home.project.portfolio.controller;
 
-import com.home.project.portfolio.model.response.PortfolioDto;
+import com.home.project.portfolio.model.portfolio.Accounts;
 import com.home.project.portfolio.service.PortfolioService;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
@@ -12,21 +12,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/portfolio", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-public class PortfolioController {
+public class AccountController {
 
     private final PortfolioService portfolioService;
 
-    public PortfolioController(PortfolioService portfolioService) {
+    public AccountController(PortfolioService portfolioService) {
         this.portfolioService = portfolioService;
     }
 
     @GetMapping
-    public ResponseEntity<PortfolioDto> getStocks() {
-        PortfolioDto portfolio;
+    public ResponseEntity<Accounts.Payload> getStocks() {
         try {
-            portfolio = portfolioService.getPortfolio();
+            var accounts = portfolioService.getAccounts();
+            var payload = new Accounts.Payload();
+            payload.setAccounts(accounts);
+            return ResponseEntity.ok(payload);
         } catch (FeignException.Unauthorized e) {
             log.warn("Retrieved unauthorized exception from Tinkoff. Token is absent or invalid");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -34,9 +36,8 @@ public class PortfolioController {
             log.error("Failed to retrieve data from tinkoff, exception {}, status code {}", e.getMessage(), e.status());
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
         } catch (Exception e) {
-            log.error("Failed to process portfolio, exception {}", e.getCause());
+            log.error("Failed to get accounts", e.getCause());
             return ResponseEntity.internalServerError().build();
         }
-        return ResponseEntity.ok(portfolio);
     }
 }
