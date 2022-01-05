@@ -2,12 +2,17 @@ tinkoff:
   api:
     token: ${TINKOFF_API_TOKEN}
     url: https://api-invest.tinkoff.ru/openapi
-
 server:
   servlet:
     context-path:
   port: ${SPRING_DOCKER_PORT}
-
+  ssl:
+    key-store-type: pkcs12
+    key-store: classpath:keystore/local.p12
+    enabled: true
+    key-password: password
+    key-alias: local
+    key-store-password: password
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,3 +25,18 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: create-drop
+  application:
+    name: portfolio
+  security:
+    oauth2:
+      client:
+        registration:
+          facebook:
+            client-id: 4994907413881265
+            client-secret: d7257b07828aba36e54b5f22ef25474b
+            scope:
+              - email
+              - public_profile
+            google:
+              client-id: 243547450598-r6f6ub4np8ht2qf5tjjo45ho4e158qr0.apps.googleusercontent.com
+              client-secret: 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

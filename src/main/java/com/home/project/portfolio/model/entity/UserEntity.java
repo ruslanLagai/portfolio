@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Entity(name = "USER")
@@ -26,9 +27,12 @@ public class UserEntity {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    @NotBlank
     private String username;
-    @NotBlank
     private String password;
+    @NotBlank
+    @Email
+    @Column(unique = true, nullable = false)
+    private String email;
+    @NotBlank
     private String token;
 }
