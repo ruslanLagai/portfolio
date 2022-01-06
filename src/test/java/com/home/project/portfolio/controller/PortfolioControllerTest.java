@@ -7,9 +7,11 @@ import com.home.project.portfolio.model.portfolio.AveragePositionItem;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.model.response.PortfolioDto;
 import com.home.project.portfolio.service.PortfolioService;
+import feign.FeignException;
+import feign.Request;
+import feign.RequestTemplate;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,10 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,8 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author rlagay
  */
 @DisplayName("Test portfolio controller")
-@WebMvcTest(PortfolioController.class)
+@WebMvcTest(value = PortfolioController.class)
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 class PortfolioControllerTest {
 
     @Autowired
@@ -42,15 +47,11 @@ class PortfolioControllerTest {
     @MockBean
     private PortfolioService portfolioService;
 
-    @BeforeEach
-    public void setUp() {
-        when(portfolioService.getPortfolio()).thenReturn(mockDto());
-    }
-
     @SneakyThrows
     @Test
     @DisplayName("basic test")
     void getStocks() {
+        when(portfolioService.getPortfolio()).thenReturn(mockDto());
         mockMvc.perform(get("/portfolio")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -66,6 +67,30 @@ class PortfolioControllerTest {
                 .andExpect(jsonPath("$.prices.f1[0].figi").value(Matchers.equalTo("f1")))
                 .andExpect(jsonPath("$.prices.f1[0].closePrice").value(Matchers.equalTo(34.1)))
                 .andExpect(jsonPath("$.prices.f1[0].lastPrice").value(Matchers.equalTo(33.0)));
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Unauthorized test")
+    void testGetStocks() {
+        when(portfolioService.getPortfolio()).thenThrow(new FeignException.Unauthorized("",
+                Request.create(Request.HttpMethod.GET, "url", Map.of(), null, new RequestTemplate()), null));
+
+        mockMvc.perform(get("/portfolio")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Feign exception test")
+    void testFeignGetStocks() {
+        when(portfolioService.getPortfolio()).thenThrow(new FeignException.InternalServerError("",
+                Request.create(Request.HttpMethod.GET, "url", Map.of(), null, new RequestTemplate()), null));
+
+        mockMvc.perform(get("/portfolio")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadGateway());
     }
 
     private PortfolioDto mockDto() {

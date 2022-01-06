@@ -2,6 +2,10 @@ tinkoff:
   api:
     token: ${TINKOFF_API_TOKEN}
     url: https://api-invest.tinkoff.ru/openapi
+server:
+  servlet:
+    context-path:
+  port: ${SPRING_DOCKER_PORT}
 
 feign:
   client:

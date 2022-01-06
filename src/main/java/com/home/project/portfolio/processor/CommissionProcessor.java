@@ -32,6 +32,7 @@ public class CommissionProcessor implements AnalyticProcessor {
                     .figi(operation.getFigi())
                     .commission(commission)
                     .isCommission(true)
+                    .instrumentType(operation.getInstrumentType())
                     .currency(operation.getCurrency())
                     .build();
     private static final BiFunction<Double, Operation, AnalyticData> SERVICE_COMMISSION_PROCESSOR =

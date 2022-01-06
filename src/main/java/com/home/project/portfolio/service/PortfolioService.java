@@ -1,6 +1,8 @@
 package com.home.project.portfolio.service;
 
 import com.home.project.portfolio.client.TinkoffClient;
+import com.home.project.portfolio.model.portfolio.Account;
+import com.home.project.portfolio.model.portfolio.Accounts;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.model.response.PortfolioDto;
 import com.home.project.portfolio.processor.AccountProcessor;
@@ -10,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class to get information about current stocks in portfolio
@@ -27,7 +30,12 @@ public class PortfolioService {
         this.accountProcessors = accountProcessors;
     }
 
-    //todo put to DB
+    public List<Account> getAccounts() {
+        return Optional.ofNullable(tinkoffClient.getUserAccounts().getPayload())
+                .map(Accounts.Payload::getAccounts)
+                .orElse(List.of());
+    }
+
     public PortfolioDto getPortfolio() {
         var portfolioDto = new PortfolioDto();
         tinkoffClient.getUserAccounts().getPayload().getAccounts()
