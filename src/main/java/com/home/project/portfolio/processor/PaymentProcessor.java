@@ -33,7 +33,7 @@ public class PaymentProcessor implements AnalyticProcessor {
 
     @Override
     public List<AnalyticData> apply(MultiValueMap<String, Operation> operations,
-                                    List<Position> positions) {
+                                    List<Position> positions, String accountId) {
         List<AnalyticData> analyticData = new ArrayList<>();
         log.info("Processing payments calculation");
 

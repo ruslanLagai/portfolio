@@ -9,5 +9,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface AnalyticProcessor {
-    List<AnalyticData> apply(MultiValueMap<String, Operation> operations, List<Position> positions);
+    List<AnalyticData> apply(MultiValueMap<String, Operation> operations, List<Position> positions, String accountId);
 }

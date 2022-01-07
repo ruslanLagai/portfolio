@@ -2,6 +2,7 @@ package com.home.project.portfolio.utils;
 
 import com.home.project.portfolio.model.Currency;
 
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -42,4 +43,14 @@ public class Constants {
             Currency.RUB, PAY_IN_RUB,
             Currency.USD, SERVICE_COMMISSION_USD
     );
+    public static final Set<Period> PERIODS_TO_SEARCH_OLDER_OPERATIONS = new LinkedHashSet<>();
+
+    static {
+        PERIODS_TO_SEARCH_OLDER_OPERATIONS.add(Period.ofMonths(1));
+        PERIODS_TO_SEARCH_OLDER_OPERATIONS.add(Period.ofMonths(6));
+        PERIODS_TO_SEARCH_OLDER_OPERATIONS.add(Period.ofYears(1));
+        PERIODS_TO_SEARCH_OLDER_OPERATIONS.add(Period.ofYears(3));
+        PERIODS_TO_SEARCH_OLDER_OPERATIONS.add(Period.ofYears(5));
+
+    }
 }

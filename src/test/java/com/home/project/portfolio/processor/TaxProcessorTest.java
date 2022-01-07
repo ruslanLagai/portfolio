@@ -33,7 +33,7 @@ class TaxProcessorTest extends AbstractProcessorTest {
         MultiValueMap<String, Operation> map = new LinkedMultiValueMap<>();
         map.put("taxRub", ALL_OPERATIONS);
 
-        var result = taxProcessor.apply(map, Collections.emptyList());
+        var result = taxProcessor.apply(map, Collections.emptyList(), "");
 
         assertAll(() -> {
             assertThat(result.size(), Matchers.equalTo(1));
@@ -62,7 +62,7 @@ class TaxProcessorTest extends AbstractProcessorTest {
         MultiValueMap<String, Operation> map = new LinkedMultiValueMap<>();
         map.put(AAPL, AAPL_OPS);
 
-        var result = taxProcessor.apply(map, Collections.emptyList());
+        var result = taxProcessor.apply(map, Collections.emptyList(), "");
 
         assertThat(result.size(), Matchers.equalTo(0));
     }

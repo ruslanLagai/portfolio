@@ -64,7 +64,7 @@ class CommissionProcessorTest extends AbstractProcessorTest {
         map.put(SERVICE_COMMISSION_RUB, COMMISSIONS_RUB);
         map.put(SERVICE_COMMISSION_USD, COMMISSIONS_USD);
 
-        var result = processor.apply(map, AAPL_POSITIONS);
+        var result = processor.apply(map, AAPL_POSITIONS, "");
         assertAll(() -> {
             assertThat(result.size(), Matchers.equalTo(3));
             assertThat(result.get(0).getTicker(), Matchers.equalTo(AAPL));
@@ -88,7 +88,7 @@ class CommissionProcessorTest extends AbstractProcessorTest {
         map.put(AAPL, AAPL_OPS);
         map.put(AMZN, AMZN_OPS);
 
-        var result = processor.apply(map, AAPL_AMZN_POSITIONS);
+        var result = processor.apply(map, AAPL_AMZN_POSITIONS, "");
         assertAll(() -> {
             assertThat(result.size(), Matchers.equalTo(2));
             assertThat(result.get(0).getTicker(), Matchers.equalTo(AAPL));
@@ -113,7 +113,7 @@ class CommissionProcessorTest extends AbstractProcessorTest {
         MultiValueMap<String, Operation> map = new LinkedMultiValueMap<>();
         map.put(AAPL, AAPL_OPS);
 
-        var result = processor.apply(map, Collections.emptyList());
+        var result = processor.apply(map, Collections.emptyList(), "");
         assertAll(() -> {
             assertThat(result.size(), Matchers.equalTo(1));
             assertThat(result.get(0).getTicker(), Matchers.equalTo(AAPL));

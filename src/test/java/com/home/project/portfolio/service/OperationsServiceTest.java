@@ -9,6 +9,9 @@ import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.Operations;
 import com.home.project.portfolio.repository.OperationRepository;
 import com.home.project.portfolio.utils.ConversionUtils;
+import feign.FeignException;
+import feign.Request;
+import feign.RequestTemplate;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +23,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.annotation.PostConstruct;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +39,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+/**
+ * Class to test {@link OperationsService}
+ */
 @ActiveProfiles(value = {CUSTOM_DB_TEST_PROFILE, TEST_PROFILE})
 @Testcontainers
 @ExtendWith(SpringExtension.class)
@@ -128,5 +136,30 @@ class OperationsServiceTest extends AbstractDbTest {
             assertThat(savedOperations.size(), Matchers.equalTo(10));
         });
     }
+
+    @Test
+    @DisplayName("Test no older operations")
+    void b1getLastOperationsForStock() {
+        var payload = new Operations.Payload();
+        payload.setOperations(Collections.emptyList());
+        var toReturn = new Operations();
+        toReturn.setStatus("ok");
+        toReturn.setPayload(payload);
+        when(tinkoffClient.getOperationsOnStock(any(), any(), any(), eq(ACCOUNT_ID))).thenReturn(toReturn);
+
+        var result = operationsService.getLastOperationsForStock(ZonedDateTime.now(), ZonedDateTime.now(), "figi", ACCOUNT_ID);
+        assertThat(result.size(), Matchers.equalTo(0));
+
+        when(tinkoffClient.getOperationsOnStock(any(), any(), any(), eq(ACCOUNT_ID)))
+                .thenThrow(new FeignException.TooManyRequests("",
+                        Request.create(Request.HttpMethod.GET, "url", Map.of(), null, new RequestTemplate()), null));
+        result = operationsService.getLastOperationsForStock(ZonedDateTime.now(), ZonedDateTime.now(), "figi", ACCOUNT_ID);
+        assertThat(result.size(), Matchers.equalTo(0));
+
+        when(tinkoffClient.getOperationsOnStock(any(), any(), any(), eq(ACCOUNT_ID))).thenReturn(restOperations);
+        result = operationsService.getLastOperationsForStock(ZonedDateTime.now(), ZonedDateTime.now(), "figi", ACCOUNT_ID);
+        assertThat(result.size(), Matchers.equalTo(10));
+    }
+
 
 }

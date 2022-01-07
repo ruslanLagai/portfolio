@@ -35,7 +35,7 @@ public class TaxProcessor implements AnalyticProcessor {
 
     @Override
     public List<AnalyticData> apply(MultiValueMap<String, Operation> operations,
-                                    List<Position> positions) {
+                                    List<Position> positions, String accountId) {
         AnalyticData analyticData = null;
         log.info("Processing taxes calculation");
 
