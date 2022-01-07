@@ -25,6 +25,7 @@ public class OperationEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "operation")
     private Set<Trade> trades;
 
+    @Column(nullable = false, unique = true)
     private long operationId;
     private String accountId;
     private Status status;
