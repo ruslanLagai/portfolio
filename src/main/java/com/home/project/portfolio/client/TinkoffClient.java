@@ -10,9 +10,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-
 /**
  * Client to get data from Tinkoff
  */
@@ -29,7 +26,7 @@ public interface TinkoffClient {
     Operations getOperations(@RequestParam String from, @RequestParam String to, @RequestParam String brokerAccountId);
 
     @GetMapping("/operations")
-    void getOperationsOnStock(@RequestParam String from, @RequestParam String to,
+    Operations getOperationsOnStock(@RequestParam String from, @RequestParam String to,
                               @RequestParam String figi, @RequestParam String brokerAccountId);
 
     @GetMapping("/market/search/by-figi")

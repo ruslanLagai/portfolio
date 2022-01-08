@@ -4,6 +4,7 @@ import com.home.project.portfolio.client.TinkoffClient;
 import com.home.project.portfolio.model.analytic.Period;
 import com.home.project.portfolio.model.entity.OperationEntity;
 import com.home.project.portfolio.model.operations.Operation;
+import com.home.project.portfolio.model.operations.Operations;
 import com.home.project.portfolio.repository.OperationRepository;
 import com.home.project.portfolio.utils.ConversionUtils;
 import com.home.project.portfolio.utils.ExecutorServiceUtils;
@@ -103,5 +104,22 @@ public class OperationsService {
         return operations.stream()
                 .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
+    }
+
+    public List<Operation> getLastOperationsForStock(ZonedDateTime from, ZonedDateTime to, String figi, String accountId) {
+        try {
+            return Optional.ofNullable(tinkoffClient
+                            .getOperationsOnStock(from.format(FORMATTER), to.format(FORMATTER), figi, accountId).getPayload())
+                    .map(Operations.Payload::getOperations)
+                    .orElseGet(() -> {
+                        log.warn("Retrieved empty operations for figi {}, to {}, from {}", figi, to, from);
+                        return List.of();
+                    });
+        } catch (FeignException e) {
+            log.warn("Failed to retrieve latest operations for account {}, status code {}, \nException: {}",
+                    accountId, e.status(), e.getMessage());
+            return List.of();
+        }
+
     }
 }

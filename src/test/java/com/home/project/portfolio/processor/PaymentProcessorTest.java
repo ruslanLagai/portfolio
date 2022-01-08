@@ -43,7 +43,7 @@ class PaymentProcessorTest extends AbstractProcessorTest {
         MultiValueMap<String, Operation> map = new LinkedMultiValueMap<>();
         map.put("payInRub", ALL_OPERATIONS);
 
-        var result = processor.apply(map, Collections.emptyList());
+        var result = processor.apply(map, Collections.emptyList(), "");
         assertAll(() -> {
             assertThat(result.size(), Matchers.equalTo(1));
             assertThat(result.get(0).getPayment().size(), Matchers.equalTo(6));
@@ -77,7 +77,7 @@ class PaymentProcessorTest extends AbstractProcessorTest {
         MultiValueMap<String, Operation> map = new LinkedMultiValueMap<>();
         map.put("payInRub", AAPL_OPS);
 
-        var result = processor.apply(map, Collections.emptyList());
+        var result = processor.apply(map, Collections.emptyList(), "");
         assertAll(() -> {
             assertThat(result.size(), Matchers.equalTo(1));
             assertThat(result.get(0).getPayment().size(), Matchers.equalTo(6));
@@ -112,7 +112,7 @@ class PaymentProcessorTest extends AbstractProcessorTest {
         MultiValueMap<String, Operation> map = new LinkedMultiValueMap<>();
         map.put("payInRub", PAY_IN_OPS);
 
-        var result = processor.apply(map, Collections.emptyList());
+        var result = processor.apply(map, Collections.emptyList(), "");
         assertAll(() -> {
             assertThat(result.size(), Matchers.equalTo(1));
             assertThat(result.get(0).getPayment().size(), Matchers.equalTo(6));

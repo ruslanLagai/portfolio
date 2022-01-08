@@ -51,7 +51,7 @@ public class AnalyticService {
 
         processors.forEach(analyticProcessor ->
                 analyticDataList.addAll(
-                        analyticProcessor.apply(operationsByTicker, positions)));
+                        analyticProcessor.apply(operationsByTicker, positions, accountId)));
 
         return AnalyticUtils.mergeAnalyticData(analyticDataList);
     }

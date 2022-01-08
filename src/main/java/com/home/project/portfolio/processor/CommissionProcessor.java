@@ -55,7 +55,7 @@ public class CommissionProcessor implements AnalyticProcessor {
 
     @Override
     public List<AnalyticData> apply(MultiValueMap<String, Operation> operations,
-                                    List<Position> positions) {
+                                    List<Position> positions, String accountId) {
         List<AnalyticData> commission = new ArrayList<>();
         log.info("Processing commission calculation");
         operations.forEach((ticker, ops) -> {

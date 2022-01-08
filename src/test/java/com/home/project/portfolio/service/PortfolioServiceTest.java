@@ -12,6 +12,7 @@ import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.*;
@@ -63,8 +64,6 @@ class PortfolioServiceTest {
                         });
                 v.stream().filter(overbook -> overbook.getTradeStatus().equals(StockAvailability.NOT_AVAILABLE))
                         .forEach(overbook -> {
-                            assertThat(overbook.getLimitDown(), Matchers.equalTo(0.0));
-                            assertThat(overbook.getLimitUp(), Matchers.equalTo(0.0));
                             assertThat(overbook.getAsks().size(), Matchers.equalTo(0));
                             assertThat(overbook.getBids().size(), Matchers.equalTo(0));
                         });
@@ -88,5 +87,8 @@ class PortfolioServiceTest {
                                                  List<AccountProcessor> accountProcessors) {
             return new PortfolioService(tinkoffClient, accountProcessors);
         }
+
+        @MockBean
+        OperationsService operationsService;
     }
 }
