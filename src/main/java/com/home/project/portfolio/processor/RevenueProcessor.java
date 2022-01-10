@@ -118,16 +118,16 @@ public class RevenueProcessor implements AnalyticProcessor {
         if (difference == 0) {
             return;
         }
-        var initialSize = operations.size();
+
+        var index = new AtomicInteger();
         log.info("Number of bought and sold operations is not equal, ticker {}, difference {}",
                 operations.get(0).getTicker(), difference);
 
         operations.stream()
                 .min(Comparator.comparing(Operation::getDate))
                 .ifPresent(operation -> PERIODS_TO_SEARCH_OLDER_OPERATIONS.stream()
-                        .takeWhile(op -> operations.size() == initialSize)
+                        .takeWhile(op -> index.get() < Math.abs(difference))
                         .forEach(period -> {
-                            var index = new AtomicInteger();
                             if (difference > 0) {
                                 operationsService.getLastOperationsForStock(operation.getDate().minus(period),
                                                 operation.getDate().minusSeconds(30), operation.getFigi(), accountId)
@@ -136,10 +136,7 @@ public class RevenueProcessor implements AnalyticProcessor {
                                         .filter(op -> op.getStatus().equals(Status.DONE))
                                         .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                                         .takeWhile(op -> index.get() < Math.abs(difference))
-                                        .forEach(op -> {
-                                            operations.add(op);
-                                            index.addAndGet(op.getQuantityExecuted());
-                                        });
+                                        .forEach(op -> addOperation(operations, difference, index, op));
                             } else {
                                 operationsService.getLastOperationsForStock(operation.getDate().minus(period),
                                                 operation.getDate().minusSeconds(30), operation.getFigi(), accountId)
@@ -149,13 +146,38 @@ public class RevenueProcessor implements AnalyticProcessor {
                                         .filter(op -> op.getStatus().equals(Status.DONE))
                                         .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                                         .takeWhile(op -> index.get() < Math.abs(difference))
-                                        .forEach(op -> {
-                                            operations.add(op);
-                                            index.addAndGet(op.getQuantityExecuted());
-                                        });
+                                        .forEach(op -> addOperation(operations, difference, index, op));
                             }
                         }));
-        log.info("Number of added operations from older period {}", operations.size() - initialSize);
+        log.info("Number of added trades from older period {}", index.get());
+    }
+
+    private void addOperation(List<Operation> operations, int difference, AtomicInteger index, Operation operation) {
+        // processing case: bought 2 stocks in single operation, but difference is 1 stock
+        var quantityToBeAdded = Math.abs(difference) - index.get();
+        if (operation.getQuantityExecuted() > quantityToBeAdded) {
+            operations.add(Operation.builder()
+                    .date(operation.getDate())
+                    .status(operation.getStatus())
+                    .operationType(operation.getOperationType())
+                    .id(operation.getId())
+                    .ticker(operation.getTicker())
+                    .figi(operation.getFigi())
+                    .instrumentType(operation.getInstrumentType())
+                    .isMarginCall(operation.isMarginCall())
+                    .trades(operation.getTrades())
+                    .commission(operation.getCommission())
+                    .price(operation.getPrice())
+                    .currency(operation.getCurrency())
+                    .quantityExecuted(quantityToBeAdded)
+                    .quantity(quantityToBeAdded)
+                    .payment(operation.getPrice() * quantityToBeAdded * Math.signum(operation.getPayment()))
+                    .build());
+            index.addAndGet(quantityToBeAdded);
+        } else {
+            operations.add(operation);
+            index.addAndGet(operation.getQuantityExecuted());
+        }
     }
 
     private MultiValueMap<String, Operation> extractOwnedOperations(MultiValueMap<String, Operation> operations,
@@ -183,7 +205,10 @@ public class RevenueProcessor implements AnalyticProcessor {
                         .collect(Collectors.toList());
 
                 var index = getFirstOwnedOperationIndex(ownedStocksNumber, sortedOperations);
-                ownedOperations.addAll(ticker, sortedOperations.subList(0, index != -1 ? index + 1 : 0));
+
+                //todo check if operations should be split
+
+                ownedOperations.addAll(ticker, sortedOperations.subList(0, index != -1 ? index : 0));
 
             }
         });
@@ -191,16 +216,21 @@ public class RevenueProcessor implements AnalyticProcessor {
     }
 
     private int getFirstOwnedOperationIndex(Integer ownedStocksNumber, List<Operation> sortedOperations) {
+        // if not enough operations -> all operations are not closed
+        var totalExecuted = sortedOperations.stream()
+                .map(Operation::getQuantityExecuted)
+                .mapToInt(Integer::intValue)
+                .sum();
+        if (totalExecuted <= ownedStocksNumber) {
+            return CollectionUtils.isEmpty(sortedOperations) ? -1 : sortedOperations.size();
+        }
+
         int sum = 0;
         int index = -1;
         for (Operation sortedOperation : sortedOperations) {
             sum += sortedOperation.getQuantityExecuted();
-            if (sum == ownedStocksNumber) {
-                index = sortedOperations.indexOf(sortedOperation);
-                break;
-            }
-            if (sum > ownedStocksNumber) {
-                log.error("Incorrect number of owned positions");
+            if (sum >= ownedStocksNumber) {
+                index = sortedOperations.indexOf(sortedOperation) + 1;
                 break;
             }
         }
