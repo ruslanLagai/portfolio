@@ -37,6 +37,8 @@ public class RevenueCalculator implements Calculator {
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
                 .map(operation -> Math.abs(operation.getPayment()))
                 .reduce(0.0, Double::sum);
-        return sold - bought;
+        var diff = sold - bought;
+
+        return Math.floor(diff * 100) / 100;
     }
 }
