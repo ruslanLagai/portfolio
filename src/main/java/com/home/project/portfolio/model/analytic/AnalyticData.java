@@ -1,5 +1,6 @@
 package com.home.project.portfolio.model.analytic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.InstrumentType;
 import lombok.AllArgsConstructor;
@@ -24,8 +25,11 @@ public class AnalyticData {
     private double revenue;
     private double commission;
     private Currency currency;
+    @JsonIgnore
     private ServiceCommission serviceCommission;
+    @JsonIgnore
     private List<Payment> payment;
+    @JsonIgnore
     private List<Taxes> taxes;
     private boolean isCommission;
     private boolean isRevenue;

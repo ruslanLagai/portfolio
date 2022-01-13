@@ -35,7 +35,7 @@ public class AnalyticController {
             log.warn("Failed to retrieve information from tinkoff, exception {}, status {}", e.getCause(), e.status());
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getCause());
         } catch (Exception e) {
-            log.error("Failed to to analyze operations {}", e.getMessage(), e.getCause());
+            log.error("Failed to analyze operations, exception {}", e.getCause().getClass(), e.getCause());
             return ResponseEntity.internalServerError().body(e.getCause());
         }
         return ResponseEntity.ok(analyticDto);

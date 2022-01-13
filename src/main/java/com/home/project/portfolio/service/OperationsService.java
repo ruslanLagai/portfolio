@@ -5,6 +5,7 @@ import com.home.project.portfolio.model.analytic.Period;
 import com.home.project.portfolio.model.entity.OperationEntity;
 import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.Operations;
+import com.home.project.portfolio.model.operations.Status;
 import com.home.project.portfolio.repository.OperationRepository;
 import com.home.project.portfolio.utils.ConversionUtils;
 import com.home.project.portfolio.utils.ExecutorServiceUtils;
@@ -102,6 +103,7 @@ public class OperationsService {
         operations.addAll(ConversionUtils.convertToRestOperations(dbOperations));
 
         return operations.stream()
+                .filter(operation -> operation.getStatus().equals(Status.DONE))
                 .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }

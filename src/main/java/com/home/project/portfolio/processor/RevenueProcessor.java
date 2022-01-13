@@ -12,7 +12,6 @@ import com.home.project.portfolio.utils.Constants;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
@@ -48,8 +47,8 @@ public class RevenueProcessor implements AnalyticProcessor {
         log.info("Processing revenue calculation for stocks in portfolio, stocks in portfolio {}",
                 positions.size());
 
-        // extracting operations that are not closed
-        var ownedOperations = extractOwnedOperations(operations, positions);
+        // remove operations that are not closed
+        removeOwnedOperations(operations, positions);
 
         for (Map.Entry<String, List<Operation>> entry : operations.entrySet()) {
             var ticker = entry.getKey();
@@ -58,11 +57,6 @@ public class RevenueProcessor implements AnalyticProcessor {
                     && ops.iterator().next().getInstrumentType().equals(InstrumentType.CURRENCY)) {
                 log.debug("Skipping currencies");
                 continue;
-            }
-            if (!CollectionUtils.isEmpty(ownedOperations.get(ticker))) {
-                ops.removeAll(ownedOperations.get(ticker));
-                log.debug("Removed {} owned operations, ticker {}", ownedOperations.get(ticker).size(),
-                        ticker);
             }
 
             var tradingOperations = ops.stream()
@@ -118,16 +112,16 @@ public class RevenueProcessor implements AnalyticProcessor {
         if (difference == 0) {
             return;
         }
-        var initialSize = operations.size();
+
+        var index = new AtomicInteger();
         log.info("Number of bought and sold operations is not equal, ticker {}, difference {}",
                 operations.get(0).getTicker(), difference);
 
         operations.stream()
                 .min(Comparator.comparing(Operation::getDate))
                 .ifPresent(operation -> PERIODS_TO_SEARCH_OLDER_OPERATIONS.stream()
-                        .takeWhile(op -> operations.size() == initialSize)
+                        .takeWhile(op -> index.get() < Math.abs(difference))
                         .forEach(period -> {
-                            var index = new AtomicInteger();
                             if (difference > 0) {
                                 operationsService.getLastOperationsForStock(operation.getDate().minus(period),
                                                 operation.getDate().minusSeconds(30), operation.getFigi(), accountId)
@@ -136,10 +130,7 @@ public class RevenueProcessor implements AnalyticProcessor {
                                         .filter(op -> op.getStatus().equals(Status.DONE))
                                         .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                                         .takeWhile(op -> index.get() < Math.abs(difference))
-                                        .forEach(op -> {
-                                            operations.add(op);
-                                            index.addAndGet(op.getQuantityExecuted());
-                                        });
+                                        .forEach(op -> addOperation(operations, difference, index, op));
                             } else {
                                 operationsService.getLastOperationsForStock(operation.getDate().minus(period),
                                                 operation.getDate().minusSeconds(30), operation.getFigi(), accountId)
@@ -149,18 +140,26 @@ public class RevenueProcessor implements AnalyticProcessor {
                                         .filter(op -> op.getStatus().equals(Status.DONE))
                                         .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                                         .takeWhile(op -> index.get() < Math.abs(difference))
-                                        .forEach(op -> {
-                                            operations.add(op);
-                                            index.addAndGet(op.getQuantityExecuted());
-                                        });
+                                        .forEach(op -> addOperation(operations, difference, index, op));
                             }
                         }));
-        log.info("Number of added operations from older period {}", operations.size() - initialSize);
+        log.info("Number of added trades from older period {}", index.get());
     }
 
-    private MultiValueMap<String, Operation> extractOwnedOperations(MultiValueMap<String, Operation> operations,
-                                                                    List<Position> positions) {
-        MultiValueMap<String, Operation> ownedOperations = new LinkedMultiValueMap<>();
+    private void addOperation(List<Operation> operations, int difference, AtomicInteger index, Operation operation) {
+        // processing case: bought 2 stocks in single operation, but difference is 1 stock
+        var quantityToBeAdded = Math.abs(difference) - index.get();
+        if (operation.getQuantityExecuted() > quantityToBeAdded) {
+            operations.add(buildOperation(operation, quantityToBeAdded));
+            index.addAndGet(quantityToBeAdded);
+        } else {
+            operations.add(operation);
+            index.addAndGet(operation.getQuantityExecuted());
+        }
+    }
+
+    private void removeOwnedOperations(MultiValueMap<String, Operation> operations,
+                                                                   List<Position> positions) {
         var ownedTickers = positions.stream()
                 .map(Position::getTicker)
                 .collect(Collectors.toSet());
@@ -183,24 +182,75 @@ public class RevenueProcessor implements AnalyticProcessor {
                         .collect(Collectors.toList());
 
                 var index = getFirstOwnedOperationIndex(ownedStocksNumber, sortedOperations);
-                ownedOperations.addAll(ticker, sortedOperations.subList(0, index != -1 ? index + 1 : 0));
 
+                removeOwnedOperations(sortedOperations.subList(0, index != -1 ? index : 0), ops, ownedStocksNumber);
             }
         });
-        return ownedOperations;
+    }
+
+    private void removeOwnedOperations(List<Operation> ownedOperations, List<Operation> allOperations,
+                                       int ownedStocksNumber) {
+        if (CollectionUtils.isEmpty(ownedOperations)) {
+            return;
+        }
+        log.debug("Removing owned operations, ticker {}", ownedOperations.get(0).getTicker());
+        var sum = 0;
+        for (Operation operation : ownedOperations) {
+            sum += operation.getQuantityExecuted();
+            if (sum <= ownedStocksNumber) {
+                allOperations.remove(operation);
+                continue;
+            }
+
+            var splittedClosedOperationPart = buildOperation(operation, sum - ownedStocksNumber);
+
+            var isDeleted = allOperations.remove(operation);
+            allOperations.add(splittedClosedOperationPart);
+
+            log.info("Owned operations quantityExecuted {}, ownedStocksNumber {}. " +
+                    "\nCommon operations is removed: {}", sum, ownedStocksNumber, isDeleted);
+            log.debug("Removed operation {}", operation.toString());
+            log.debug("Added operation {}", splittedClosedOperationPart.toString());
+        }
+    }
+
+
+    private Operation buildOperation(Operation operation, int quantityToBeAdded) {
+        return Operation.builder()
+                .date(operation.getDate())
+                .status(operation.getStatus())
+                .operationType(operation.getOperationType())
+                .id(operation.getId())
+                .ticker(operation.getTicker())
+                .figi(operation.getFigi())
+                .instrumentType(operation.getInstrumentType())
+                .isMarginCall(operation.isMarginCall())
+                .trades(operation.getTrades())
+                .commission(operation.getCommission())
+                .price(operation.getPrice())
+                .currency(operation.getCurrency())
+                .quantityExecuted(quantityToBeAdded)
+                .quantity(quantityToBeAdded)
+                .payment(operation.getPrice() * quantityToBeAdded * Math.signum(operation.getPayment()))
+                .build();
     }
 
     private int getFirstOwnedOperationIndex(Integer ownedStocksNumber, List<Operation> sortedOperations) {
+        // if not enough operations -> all operations are not closed
+        var totalExecuted = sortedOperations.stream()
+                .map(Operation::getQuantityExecuted)
+                .mapToInt(Integer::intValue)
+                .sum();
+        if (totalExecuted <= ownedStocksNumber) {
+            return CollectionUtils.isEmpty(sortedOperations) ? -1 : sortedOperations.size();
+        }
+
         int sum = 0;
         int index = -1;
         for (Operation sortedOperation : sortedOperations) {
             sum += sortedOperation.getQuantityExecuted();
-            if (sum == ownedStocksNumber) {
-                index = sortedOperations.indexOf(sortedOperation);
-                break;
-            }
-            if (sum > ownedStocksNumber) {
-                log.error("Incorrect number of owned positions");
+            if (sum >= ownedStocksNumber) {
+                index = sortedOperations.indexOf(sortedOperation) + 1;
                 break;
             }
         }
