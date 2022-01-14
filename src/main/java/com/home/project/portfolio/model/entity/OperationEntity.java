@@ -26,7 +26,7 @@ public class OperationEntity {
     private Set<Trade> trades;
 
     @Column(nullable = false, unique = true)
-    private long operationId;
+    private String operationId;
     private String accountId;
     private Status status;
     private Currency currency;

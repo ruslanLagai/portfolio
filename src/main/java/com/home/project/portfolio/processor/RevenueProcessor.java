@@ -71,12 +71,26 @@ public class RevenueProcessor implements AnalyticProcessor {
             addOlderOperations(tradingOperations, accountId);
 
             var revenue = revenueCalculator.calculate(tradingOperations);
+            var totalBoughtSum = tradingOperations.stream()
+                    .filter(o -> o.getOperationType().equals(OperationType.BUY) ||
+                            o.getOperationType().equals(OperationType.BUY_CARD))
+                    .map(o -> Math.abs(o.getPayment()))
+                    .mapToDouble(Double::doubleValue)
+                    .sum();
+            var totalSoldSum = tradingOperations.stream()
+                    .filter(o -> o.getOperationType().equals(OperationType.SELL))
+                    .map(o -> Math.abs(o.getPayment()))
+                    .mapToDouble(Double::doubleValue)
+                    .sum();
             log.info("Computed revenue for {}, revenue {}", ticker, revenue);
 
             var operation = tradingOperations.stream().findAny().orElse(new Operation());
             analyticDataList.add(AnalyticData.builder()
                     .figi(operation.getFigi())
                     .revenue(revenue)
+                    .totalSoldSum(totalSoldSum)
+                    .totalBoughtSum(totalBoughtSum)
+                    .revenuePercentage(Math.floor((revenue / totalBoughtSum) * 100) / 100)
                     .isRevenue(true)
                     .instrumentType(operation.getInstrumentType())
                     .currency(operation.getCurrency())

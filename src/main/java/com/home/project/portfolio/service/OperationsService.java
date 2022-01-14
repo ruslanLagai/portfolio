@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -76,7 +77,7 @@ public class OperationsService {
                 // filter out the ones which we have in the DB already
                 payload.stream().filter(operation -> {
                     Optional<OperationEntity> matchingObject = dbOperations.stream().
-                            filter(o -> o.getOperationId() == operation.getId()).
+                            filter(o -> Objects.equals(o.getOperationId(), operation.getId())).
                             findFirst();
                     return matchingObject.isEmpty();
                 }).collect(Collectors.toSet()).forEach(operation -> {
