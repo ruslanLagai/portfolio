@@ -63,7 +63,7 @@ public class PaymentProcessor implements AnalyticProcessor {
                 buildPayment(payInEur, OperationType.PAY_IN, Currency.EUR),
                 buildPayment(payOutUsd, OperationType.PAY_OUT, Currency.USD),
                 buildPayment(payOutRub, OperationType.PAY_OUT, Currency.RUB),
-                buildPayment(payInEur, OperationType.PAY_OUT, Currency.EUR)
+                buildPayment(payOutEur, OperationType.PAY_OUT, Currency.EUR)
         );
         return AnalyticData.builder()
                 .payment(payments)
