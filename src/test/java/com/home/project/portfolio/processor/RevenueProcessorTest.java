@@ -21,6 +21,7 @@ import org.springframework.util.MultiValueMap;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.home.project.portfolio.utils.OperationGroups.TRADING_OPERATIONS;
@@ -110,6 +111,9 @@ class RevenueProcessorTest extends AbstractProcessorTest {
             assertFalse(analyticDataList.isEmpty());
             assertThat(analyticDataList.get(0).getTicker(), Matchers.equalTo(AAPL));
             assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1060.0));
+            assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1060.0));
+            assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1060.0));
+            assertThat(analyticDataList.get(0).getRevenuePercentage(), Matchers.equalTo(0));
             assertThat(analyticDataList.get(0).getCurrency(), Matchers.equalTo(Currency.USD));
             assertThat(analyticDataList.get(0).getCommission(), Matchers.equalTo(0.0));
             assertThat(analyticDataList.get(0).getFigi(), Matchers.equalTo("BBG000B9XRY4"));
@@ -202,7 +206,7 @@ class RevenueProcessorTest extends AbstractProcessorTest {
 
         MultiValueMap<String, Operation> map = new LinkedMultiValueMap<>();
         var toModify = aaplOps.stream()
-                        .filter(operation -> operation.getId() == 77075356700L)
+                        .filter(operation -> Objects.equals(operation.getId(), "77075356700L"))
                                 .findFirst().orElse(new Operation());
         toModify.setOperationType(OperationType.BUY);
         map.put(AAPL, aaplOps);

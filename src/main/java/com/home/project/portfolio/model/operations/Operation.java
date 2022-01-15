@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Operation {
-    private long id;
+    private String id;
     private Status status;
     private Currency currency;
     private double payment;

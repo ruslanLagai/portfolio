@@ -25,6 +25,9 @@ public class AnalyticData {
     private double revenue;
     private double commission;
     private Currency currency;
+    private double totalSoldSum;
+    private double totalBoughtSum;
+    private double revenuePercentage;
     @JsonIgnore
     private ServiceCommission serviceCommission;
     @JsonIgnore

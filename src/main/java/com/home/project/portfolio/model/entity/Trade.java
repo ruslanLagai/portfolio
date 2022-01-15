@@ -21,7 +21,7 @@ public class Trade {
     @JoinColumn(name = "operation_Id")
     private OperationEntity operation;
 
-    private long operationId;
+    private String operationId;
     private String tradeId;
     private ZonedDateTime date;
     private int quantity;
