@@ -24,10 +24,12 @@ public class PaymentCalculator implements Calculator {
         if (CollectionUtils.isEmpty(operations)) {
             return 0.0;
         }
-        return operations.stream()
+        var total = operations.stream()
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
                 .filter(operation -> OperationGroups.PAYMENTS.contains(operation.getOperationType()))
                 .map(operation -> Math.abs(operation.getPayment()))
                 .reduce(0.0, Double::sum);
+
+        return Math.floor(total * 100) / 100;
     }
 }

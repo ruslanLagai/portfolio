@@ -24,10 +24,12 @@ public class TaxCalculator implements Calculator {
         if (CollectionUtils.isEmpty(operations)) {
             return 0.0;
         }
-        return operations.stream()
+        var tax = operations.stream()
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
                 .filter(operation -> OperationGroups.TAXES.contains(operation.getOperationType()))
                 .map(operation -> Math.abs(operation.getPayment()))
                 .reduce(0.0, Double::sum);
+
+        return Math.floor(tax * 100) / 100;
     }
 }

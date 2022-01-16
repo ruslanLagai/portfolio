@@ -26,10 +26,12 @@ public class CommissionCalculator implements Calculator {
             log.warn("Empty or null list of operations");
             return 0.0;
         }
-        return operations.stream()
+        var commission = operations.stream()
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
                 .filter(operation -> OperationGroups.COMMISSIONS.contains(operation.getOperationType()))
                 .map(operation -> Math.abs(operation.getPayment()))
                 .reduce(0.0, Double::sum);
+
+        return Math.floor(commission * 100) / 100;
     }
 }

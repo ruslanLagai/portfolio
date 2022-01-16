@@ -62,7 +62,6 @@ class AnalyticServiceTest {
         var savedOperations = operationRepository.findAll();
         assertAll(() -> {
             assertThat(result.getAnalyticData().size(), Matchers.greaterThan(10));
-            assertThat(result.getAnalyticData().size(), Matchers.greaterThan(savedTickers.size()));
             assertThat(savedOperations.size(), Matchers.greaterThan(1000));
             result.getAnalyticData().forEach(analyticData -> {
                 assertNotNull(analyticData.getTicker());

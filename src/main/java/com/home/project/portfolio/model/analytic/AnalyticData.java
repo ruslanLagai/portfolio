@@ -28,6 +28,7 @@ public class AnalyticData {
     private double totalSoldSum;
     private double totalBoughtSum;
     private double revenuePercentage;
+    private double dividend;
     @JsonIgnore
     private ServiceCommission serviceCommission;
     @JsonIgnore

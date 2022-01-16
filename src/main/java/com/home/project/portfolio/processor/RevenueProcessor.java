@@ -9,10 +9,12 @@ import com.home.project.portfolio.model.operations.Status;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.service.OperationsService;
 import com.home.project.portfolio.utils.Constants;
+import com.home.project.portfolio.utils.OperationUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
+import org.testcontainers.shaded.com.google.common.util.concurrent.AtomicDouble;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -59,9 +61,15 @@ public class RevenueProcessor implements AnalyticProcessor {
                 continue;
             }
 
+            var dividends = new AtomicDouble();
             var tradingOperations = ops.stream()
                     .filter(operation -> !Constants.SPECIAL_TICKERS.contains(operation.getTicker()))
                     .filter(operation -> operation.getFigi() != null)
+                    .peek(operation -> {
+                        if (operation.getOperationType().equals(OperationType.DIVIDEND)) {
+                            dividends.addAndGet(operation.getPayment());
+                        }
+                    })
                     .filter(operation -> operation.getOperationType().equals(OperationType.SELL)
                             || operation.getOperationType().equals(OperationType.BUY)
                             || operation.getOperationType().equals(OperationType.BUY_CARD))
@@ -88,9 +96,10 @@ public class RevenueProcessor implements AnalyticProcessor {
             analyticDataList.add(AnalyticData.builder()
                     .figi(operation.getFigi())
                     .revenue(revenue)
-                    .totalSoldSum(totalSoldSum)
-                    .totalBoughtSum(totalBoughtSum)
-                    .revenuePercentage(Math.floor((revenue / totalBoughtSum) * 100) / 100)
+                    .dividend(Math.floor(dividends.get() * 100) / 100)
+                    .totalSoldSum(Math.floor((totalSoldSum * 100) / 100))
+                    .totalBoughtSum(Math.floor((totalBoughtSum) * 100) / 100)
+                    .revenuePercentage(Math.floor((revenue / totalBoughtSum) * 1000) / 10)
                     .isRevenue(true)
                     .instrumentType(operation.getInstrumentType())
                     .currency(operation.getCurrency())
@@ -164,7 +173,7 @@ public class RevenueProcessor implements AnalyticProcessor {
         // processing case: bought 2 stocks in single operation, but difference is 1 stock
         var quantityToBeAdded = Math.abs(difference) - index.get();
         if (operation.getQuantityExecuted() > quantityToBeAdded) {
-            operations.add(buildOperation(operation, quantityToBeAdded));
+            operations.add(OperationUtils.buildOperation(operation, quantityToBeAdded));
             index.addAndGet(quantityToBeAdded);
         } else {
             operations.add(operation);
@@ -188,14 +197,9 @@ public class RevenueProcessor implements AnalyticProcessor {
                         .findFirst()
                         .orElse(0);
                 log.debug("Owned stocks number {}, ticker {}", ownedStocksNumber, ticker);
-                var sortedOperations = ops.stream()
-                        .filter(operation -> operation.getStatus().equals(Status.DONE))
-                        .filter(operation -> operation.getOperationType().equals(OperationType.BUY)
-                                || operation.getOperationType().equals(OperationType.BUY_CARD))
-                        .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
-                        .collect(Collectors.toList());
 
-                var index = getFirstOwnedOperationIndex(ownedStocksNumber, sortedOperations);
+                var sortedOperations = OperationUtils.sortBuyOperations(ops);
+                var index = OperationUtils.getFirstOwnedOperationIndex(ownedStocksNumber, sortedOperations);
 
                 removeOwnedOperations(sortedOperations.subList(0, index != -1 ? index : 0), ops, ownedStocksNumber);
             }
@@ -216,7 +220,8 @@ public class RevenueProcessor implements AnalyticProcessor {
                 continue;
             }
 
-            var splittedClosedOperationPart = buildOperation(operation, sum - ownedStocksNumber);
+            var splittedClosedOperationPart = OperationUtils
+                    .buildOperation(operation, sum - ownedStocksNumber);
 
             var isDeleted = allOperations.remove(operation);
             allOperations.add(splittedClosedOperationPart);
@@ -226,48 +231,5 @@ public class RevenueProcessor implements AnalyticProcessor {
             log.debug("Removed operation {}", operation.toString());
             log.debug("Added operation {}", splittedClosedOperationPart.toString());
         }
-    }
-
-
-    private Operation buildOperation(Operation operation, int quantityToBeAdded) {
-        return Operation.builder()
-                .date(operation.getDate())
-                .status(operation.getStatus())
-                .operationType(operation.getOperationType())
-                .id(operation.getId())
-                .ticker(operation.getTicker())
-                .figi(operation.getFigi())
-                .instrumentType(operation.getInstrumentType())
-                .isMarginCall(operation.isMarginCall())
-                .trades(operation.getTrades())
-                .commission(operation.getCommission())
-                .price(operation.getPrice())
-                .currency(operation.getCurrency())
-                .quantityExecuted(quantityToBeAdded)
-                .quantity(quantityToBeAdded)
-                .payment(operation.getPrice() * quantityToBeAdded * Math.signum(operation.getPayment()))
-                .build();
-    }
-
-    private int getFirstOwnedOperationIndex(Integer ownedStocksNumber, List<Operation> sortedOperations) {
-        // if not enough operations -> all operations are not closed
-        var totalExecuted = sortedOperations.stream()
-                .map(Operation::getQuantityExecuted)
-                .mapToInt(Integer::intValue)
-                .sum();
-        if (totalExecuted <= ownedStocksNumber) {
-            return CollectionUtils.isEmpty(sortedOperations) ? -1 : sortedOperations.size();
-        }
-
-        int sum = 0;
-        int index = -1;
-        for (Operation sortedOperation : sortedOperations) {
-            sum += sortedOperation.getQuantityExecuted();
-            if (sum >= ownedStocksNumber) {
-                index = sortedOperations.indexOf(sortedOperation) + 1;
-                break;
-            }
-        }
-        return index;
     }
 }
