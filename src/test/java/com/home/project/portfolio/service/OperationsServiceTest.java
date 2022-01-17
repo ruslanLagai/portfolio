@@ -131,7 +131,7 @@ class OperationsServiceTest extends AbstractDbTest {
         var result = operationsService.getLastOperations(ACCOUNT_ID, Period.LAST_SIX_MONTH);
         var savedOperations = operationRepository.getByAccountId(ACCOUNT_ID);
         assertAll(() -> {
-            assertThat(result.size(), Matchers.equalTo(10));
+            assertThat(result.size(), Matchers.equalTo(9));
             assertThat(result.get(0), Matchers.equalTo(latestOperation));
             assertThat(savedOperations.size(), Matchers.equalTo(10));
         });

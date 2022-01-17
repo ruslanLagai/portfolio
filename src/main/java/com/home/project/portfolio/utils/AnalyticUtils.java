@@ -3,6 +3,7 @@ package com.home.project.portfolio.utils;
 import com.home.project.portfolio.model.analytic.AnalyticData;
 import com.home.project.portfolio.model.response.AnalyticDto;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +22,15 @@ public class AnalyticUtils {
         return null;
     };
     private static final BiFunction<AnalyticData, AnalyticDto, String> processTax = (data, analyticDto) -> {
-        analyticDto.getTaxes().addAll(data.getTaxes());
+        if (CollectionUtils.isEmpty(analyticDto.getTaxes())) {
+            analyticDto.setTaxes(data.getTaxes());
+        } else {
+            data.getTaxes()
+                    .forEach(tax -> analyticDto.getTaxes().stream()
+                            .filter(t -> t.getOperationType().equals(tax.getOperationType()))
+                            .findFirst()
+                            .ifPresent(t -> t.setTaxes(tax.getTaxes() + t.getTaxes())));
+        }
         return null;
     };
     private static final BiFunction<AnalyticData, AnalyticDto, String> processPayment = (data, analyticDto) -> {
@@ -39,6 +48,7 @@ public class AnalyticUtils {
             var toPut = AnalyticData.builder()
                     .commission(data.isCommission() ? data.getCommission() : 0.0)
                     .revenue(data.isRevenue() ? data.getRevenue() : 0.0)
+                    .dividend(data.isRevenue() ? data.getDividend() : 0.0)
                     .ticker(data.getTicker())
                     .instrumentType(data.getInstrumentType())
                     .currency(data.getCurrency())
@@ -49,6 +59,7 @@ public class AnalyticUtils {
             var toUpdate = map.get(data.getTicker());
             if (data.isRevenue()) {
                 toUpdate.setRevenue(data.getRevenue());
+                toUpdate.setDividend(data.getDividend());
             } else if (data.isCommission()) {
                 toUpdate.setCommission(data.getCommission());
             }

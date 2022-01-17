@@ -36,11 +36,11 @@ public class PortfolioService {
                 .orElse(List.of());
     }
 
-    public PortfolioDto getPortfolio() {
+    public PortfolioDto getPortfolio(String accountId) {
         var portfolioDto = new PortfolioDto();
-        tinkoffClient.getUserAccounts().getPayload().getAccounts()
-                .forEach(account -> accountProcessors
-                        .forEach(accountProcessor -> accountProcessor.apply(account, portfolioDto)));
+        // add stock & funds & bounds data
+        accountProcessors
+                .forEach(accountProcessor -> accountProcessor.apply(accountId, portfolioDto));
         return portfolioDto;
     }
 
@@ -53,7 +53,7 @@ public class PortfolioService {
 
     public PortfolioDto getCurrentPrice(String figi, PortfolioDto portfolioDto) {
         var overbook = tinkoffClient.getCurrentPrice(figi, 1);
-        portfolioDto.addPrice(figi, overbook.getPayload());
+        portfolioDto.getPrices().put(figi, overbook.getPayload());
         return portfolioDto;
     }
 
