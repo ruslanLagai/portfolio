@@ -95,7 +95,7 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
     private double calculateTotalInCash(PortfolioDto portfolioDto, Map<Currency, Double> currencyPrices) {
         double result = 0.0;
         for (Map.Entry<Currency, Double> entry : portfolioDto.getCash().entrySet()) {
-            result = entry.getValue() * currencyPrices.getOrDefault(entry.getKey(), 1.0);
+            result += entry.getValue() * currencyPrices.getOrDefault(entry.getKey(), 1.0);
         }
         log.info("Calculated total in cash {}", result);
         return Math.floor(result * 100) / 100;
