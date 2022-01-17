@@ -22,22 +22,21 @@ public class AccountProcessorImpl implements AccountProcessor {
     }
 
     @Override
-    public void apply(Account account, PortfolioDto portfolioDto) {
-        log.info("Getting positions for accountId {}, accountType {}",
-                account.getBrokerAccountId(), account.getBrokerAccountType().name());
-        var portfolio = tinkoffClient.getPortfolioForAccount(account.getBrokerAccountId());
+    public void apply(String accountId, PortfolioDto portfolioDto) {
+        log.info("Getting positions for accountId {}", accountId);
+        var portfolio = tinkoffClient.getPortfolioForAccount(accountId);
         if (!portfolio.getStatus().equalsIgnoreCase("ok")) {
             log.warn("Retrieved portfolio contains non ok status: {}", portfolio.getStatus());
         }
         if (portfolio.getPayload() == null) {
-            log.warn("Retrieved null payload for portfolio, accountId {}", account.getBrokerAccountId());
+            log.warn("Retrieved null payload for portfolio, accountId {}", accountId);
         }
         Stream.of(portfolio)
                 .filter(p -> p.getStatus().equalsIgnoreCase("ok"))
                 .filter(p -> p.getPayload() != null)
                 .peek(p -> {
                     log.info("Retrieved {} positions", portfolio.getPayload().getPositions().size());
-                    portfolioDto.addPositions(account.getBrokerAccountType().name(), portfolio.getPayload().getPositions());
+                    portfolioDto.getPositions().addAll(portfolio.getPayload().getPositions());
                 })
                 .forEach(p -> p.getPayload().getPositions()
                         .forEach(positions -> {
@@ -45,7 +44,7 @@ public class AccountProcessorImpl implements AccountProcessor {
                             var overbook = tinkoffClient.getCurrentPrice(positions.getFigi(), 1);
                             log.debug("Received overbook for {}, overbook {}", positions.getFigi(),
                                     overbook.getPayload().toString());
-                            portfolioDto.addPrice(positions.getFigi(), overbook.getPayload());
+                            portfolioDto.getPrices().put(positions.getFigi(), overbook.getPayload());
                         })
                 );
     }

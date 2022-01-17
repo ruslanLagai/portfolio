@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,10 +24,10 @@ public class PortfolioController {
     }
 
     @GetMapping
-    public ResponseEntity<PortfolioDto> getStocks() {
+    public ResponseEntity<PortfolioDto> getStocks(@RequestParam String accountId) {
         PortfolioDto portfolio;
         try {
-            portfolio = portfolioService.getPortfolio();
+            portfolio = portfolioService.getPortfolio(accountId);
         } catch (FeignException.Unauthorized e) {
             log.warn("Retrieved unauthorized exception from Tinkoff. Token is absent or invalid");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

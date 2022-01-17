@@ -5,6 +5,7 @@ import com.home.project.portfolio.model.operations.Instrument;
 import com.home.project.portfolio.model.operations.Operations;
 import com.home.project.portfolio.model.operations.PriceResponse;
 import com.home.project.portfolio.model.portfolio.Accounts;
+import com.home.project.portfolio.model.portfolio.Currencies;
 import com.home.project.portfolio.model.portfolio.Portfolio;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,5 +35,8 @@ public interface TinkoffClient {
 
     @GetMapping("/market/orderbook")
     PriceResponse getCurrentPrice(@RequestParam String figi, @RequestParam int depth);
+
+    @GetMapping("/portfolio/currencies")
+    Currencies getCurrencies(@RequestParam String accountId);
 }
 
