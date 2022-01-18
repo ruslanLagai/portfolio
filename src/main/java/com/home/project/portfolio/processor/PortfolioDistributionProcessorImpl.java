@@ -97,11 +97,12 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
 
     private void populateCashData(@NotNull PortfolioDto portfolioDto, Map<Currency, Double> currencyPrices) {
         portfolioDto.getCash().forEach((currency, currencyDto) -> {
+            var figi = CURRENCY_FIGI_MAP.getOrDefault(currency, "default");
             currencyDto.setCurrentPrice(currencyPrices.getOrDefault(currency, 0.0));
             portfolioDto.getPositions().stream()
-                    .filter(position -> CURRENCY_FIGI_MAP.getOrDefault(currency, null) != null)
-                    .findFirst()
-                    .ifPresent(position -> currencyDto.setAveragePrice(position.getAveragePositionPrice().getValue()));
+                    .filter(position -> position.getInstrumentType().equals(InstrumentType.CURRENCY))
+                    .filter(position -> position.getFigi().equals(figi))
+                    .forEach(position -> currencyDto.setAveragePrice(position.getAveragePositionPrice().getValue()));
         });
     }
 
