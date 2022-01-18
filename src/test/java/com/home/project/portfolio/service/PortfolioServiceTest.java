@@ -81,7 +81,9 @@ class PortfolioServiceTest {
         assertAll(() ->
                 result.getCash().forEach((currency, value) -> {
                     assertFalse(result.getCash().isEmpty());
-                    assertThat(value, Matchers.greaterThanOrEqualTo(0.0));
+                    assertThat(value.getBalance(), Matchers.greaterThanOrEqualTo(0.0));
+                    assertThat(value.getAveragePrice(), Matchers.greaterThanOrEqualTo(0.0));
+                    assertThat(value.getCurrentPrice(), Matchers.greaterThanOrEqualTo(0.0));
                 }));
 
         // distribution

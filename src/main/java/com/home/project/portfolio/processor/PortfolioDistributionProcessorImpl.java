@@ -8,6 +8,7 @@ import com.home.project.portfolio.model.portfolio.Distribution;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.model.response.PortfolioDto;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.testcontainers.shaded.com.google.common.util.concurrent.AtomicDouble;
 
@@ -78,7 +79,7 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
                             * currencyPrices.getOrDefault(currencyByFigi.get(overbook.getFigi()), 1.0);
                     sum.addAndGet(result);
                 });
-        sum.addAndGet(portfolioDto.getCash().get(Currency.RUB));
+        sum.addAndGet(portfolioDto.getCash().get(Currency.RUB).getBalance());
 
         var distribution = Distribution.builder()
                 .assetsInRub(sum.get())
@@ -90,12 +91,24 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
                 .build();
 
         portfolioDto.setDistribution(distribution);
+
+        populateCashData(portfolioDto, currencyPrices);
+    }
+
+    private void populateCashData(@NotNull PortfolioDto portfolioDto, Map<Currency, Double> currencyPrices) {
+        portfolioDto.getCash().forEach((currency, currencyDto) -> {
+            currencyDto.setCurrentPrice(currencyPrices.getOrDefault(currency, 0.0));
+            portfolioDto.getPositions().stream()
+                    .filter(position -> CURRENCY_FIGI_MAP.getOrDefault(currency, null) != null)
+                    .findFirst()
+                    .ifPresent(position -> currencyDto.setAveragePrice(position.getAveragePositionPrice().getValue()));
+        });
     }
 
     private double calculateTotalInCash(PortfolioDto portfolioDto, Map<Currency, Double> currencyPrices) {
         double result = 0.0;
-        for (Map.Entry<Currency, Double> entry : portfolioDto.getCash().entrySet()) {
-            result += entry.getValue() * currencyPrices.getOrDefault(entry.getKey(), 1.0);
+        for (Map.Entry<Currency, PortfolioDto.CurrencyDto> entry : portfolioDto.getCash().entrySet()) {
+            result += entry.getValue().getBalance() * currencyPrices.getOrDefault(entry.getKey(), 1.0);
         }
         log.info("Calculated total in cash {}", result);
         return Math.floor(result * 100) / 100;
