@@ -82,7 +82,7 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
         sum.addAndGet(portfolioDto.getCash().get(Currency.RUB).getBalance());
 
         var distribution = Distribution.builder()
-                .assetsInRub(sum.get())
+                .assetsInRub(Math.floor(sum.get() * 100) / 100)
                 .assetsInUsd(Math.floor(sum.get() / currencyPrices.get(Currency.USD) * 100) / 100)
                 .totalInCash(calculateTotalInCash(portfolioDto, currencyPrices))
                 .totalInStocks(calculateTotalInType(portfolioDto, currencyPrices, InstrumentType.STOCK))
