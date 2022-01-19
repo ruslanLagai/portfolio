@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * VTB Group. Do not reproduce without permission in writing.
- * Copyright (c) $today.year VTB Group. All rights reserved.
- *
  * @author rlagay
  */
 public class OperationUtils {

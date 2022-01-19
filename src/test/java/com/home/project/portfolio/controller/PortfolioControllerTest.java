@@ -75,8 +75,12 @@ class PortfolioControllerTest {
                 .andExpect(jsonPath("$.distribution.totalInBounds").value(Matchers.equalTo(1.0)))
                 .andExpect(jsonPath("$.distribution.assetsInUsd").value(Matchers.equalTo(10.0)))
                 .andExpect(jsonPath("$.distribution.assetsInRub").value(Matchers.equalTo(10.0)))
-                .andExpect(jsonPath("$.cash.USD").value(Matchers.equalTo(10.0)))
-                .andExpect(jsonPath("$.cash.RUB").value(Matchers.equalTo(10.0)));
+                .andExpect(jsonPath("$.cash.USD.balance").value(Matchers.equalTo(10.0)))
+                .andExpect(jsonPath("$.cash.RUB.balance").value(Matchers.equalTo(10.0)))
+                .andExpect(jsonPath("$.cash.USD.averagePrice").value(Matchers.equalTo(10.0)))
+                .andExpect(jsonPath("$.cash.RUB.averagePrice").value(Matchers.equalTo(10.0)))
+                .andExpect(jsonPath("$.cash.USD.currentPrice").value(Matchers.equalTo(10.0)))
+                .andExpect(jsonPath("$.cash.RUB.currentPrice").value(Matchers.equalTo(10.0)));
 
     }
 
@@ -128,8 +132,16 @@ class PortfolioControllerTest {
         dto.setDistribution(distribution);
 
         dto.setCash(Map.of(
-                Currency.USD, 10.0,
-                Currency.RUB, 10.0
+                Currency.USD, PortfolioDto.CurrencyDto.builder()
+                        .balance(10.0)
+                        .averagePrice(10.0)
+                        .currentPrice(10.0)
+                        .build(),
+                Currency.RUB, PortfolioDto.CurrencyDto.builder()
+                        .balance(10.0)
+                        .averagePrice(10.0)
+                        .currentPrice(10.0)
+                        .build()
         ));
         return dto;
     }

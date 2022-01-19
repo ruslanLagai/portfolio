@@ -38,6 +38,8 @@ public class CashProcessorImpl implements AccountProcessor {
                 .map(Currencies::getPayload)
                 .peek(c -> log.info("Retrieved {} currencies", currencies.getPayload().getCurrencies().size()))
                 .forEach(c -> c.getCurrencies()
-                        .forEach(currency -> portfolioDto.getCash().put(currency.getCurrency(), currency.getBalance())));
+                        .forEach(currency -> portfolioDto.getCash().put(currency.getCurrency(), PortfolioDto.CurrencyDto.builder()
+                                .balance(currency.getBalance())
+                                .build())));
     }
 }
