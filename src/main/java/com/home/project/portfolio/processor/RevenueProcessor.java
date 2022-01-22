@@ -11,6 +11,7 @@ import com.home.project.portfolio.service.OperationsService;
 import com.home.project.portfolio.utils.Constants;
 import com.home.project.portfolio.utils.OperationUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
@@ -96,10 +97,10 @@ public class RevenueProcessor implements AnalyticProcessor {
             analyticDataList.add(AnalyticData.builder()
                     .figi(operation.getFigi())
                     .revenue(revenue)
-                    .dividend(Math.floor(dividends.get() * 100) / 100)
-                    .totalSoldSum(Math.floor((totalSoldSum * 100) / 100))
-                    .totalBoughtSum(Math.floor((totalBoughtSum) * 100) / 100)
-                    .revenuePercentage(Math.floor((revenue / totalBoughtSum) * 1000) / 10)
+                    .dividend(Precision.round(dividends.get(), 2))
+                    .totalSoldSum(Precision.round(totalSoldSum, 2))
+                    .totalBoughtSum(Precision.round(totalBoughtSum, 2))
+                    .revenuePercentage(Precision.round((revenue / totalBoughtSum * 100), 2))
                     .isRevenue(true)
                     .instrumentType(operation.getInstrumentType())
                     .currency(operation.getCurrency())

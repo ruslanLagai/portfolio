@@ -4,6 +4,7 @@ import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.Status;
 import com.home.project.portfolio.utils.OperationGroups;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -32,6 +33,6 @@ public class CommissionCalculator implements Calculator {
                 .map(operation -> Math.abs(operation.getPayment()))
                 .reduce(0.0, Double::sum);
 
-        return Math.floor(commission * 100) / 100;
+        return Precision.round(commission, 2);
     }
 }
