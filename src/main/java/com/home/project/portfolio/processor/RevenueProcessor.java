@@ -100,7 +100,8 @@ public class RevenueProcessor implements AnalyticProcessor {
                     .dividend(Precision.round(dividends.get(), 2))
                     .totalSoldSum(Precision.round(totalSoldSum, 2))
                     .totalBoughtSum(Precision.round(totalBoughtSum, 2))
-                    .revenuePercentage(Precision.round((revenue / totalBoughtSum * 100), 2))
+                    .revenuePercentage(totalBoughtSum != 0.0 ?
+                            Precision.round((revenue / totalBoughtSum * 100), 2) : 0.0)
                     .isRevenue(true)
                     .instrumentType(operation.getInstrumentType())
                     .currency(operation.getCurrency())
