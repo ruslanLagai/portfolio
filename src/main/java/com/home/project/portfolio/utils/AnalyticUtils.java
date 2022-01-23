@@ -49,6 +49,9 @@ public class AnalyticUtils {
                     .commission(data.isCommission() ? data.getCommission() : 0.0)
                     .revenue(data.isRevenue() ? data.getRevenue() : 0.0)
                     .dividend(data.isRevenue() ? data.getDividend() : 0.0)
+                    .totalBoughtSum(data.getTotalBoughtSum())
+                    .totalSoldSum(data.getTotalSoldSum())
+                    .revenuePercentage(data.getRevenuePercentage())
                     .ticker(data.getTicker())
                     .instrumentType(data.getInstrumentType())
                     .currency(data.getCurrency())
@@ -60,6 +63,9 @@ public class AnalyticUtils {
             if (data.isRevenue()) {
                 toUpdate.setRevenue(data.getRevenue());
                 toUpdate.setDividend(data.getDividend());
+                toUpdate.setTotalBoughtSum(data.getTotalBoughtSum());
+                toUpdate.setTotalSoldSum(data.getTotalSoldSum());
+                toUpdate.setRevenuePercentage(data.getRevenuePercentage());
             } else if (data.isCommission()) {
                 toUpdate.setCommission(data.getCommission());
             }

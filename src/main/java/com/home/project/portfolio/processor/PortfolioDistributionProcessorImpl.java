@@ -8,6 +8,7 @@ import com.home.project.portfolio.model.portfolio.Distribution;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.model.response.PortfolioDto;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.math3.util.Precision;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.testcontainers.shaded.com.google.common.util.concurrent.AtomicDouble;
@@ -82,8 +83,8 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
         sum.addAndGet(portfolioDto.getCash().get(Currency.RUB).getBalance());
 
         var distribution = Distribution.builder()
-                .assetsInRub(Math.floor(sum.get() * 100) / 100)
-                .assetsInUsd(Math.floor(sum.get() / currencyPrices.get(Currency.USD) * 100) / 100)
+                .assetsInRub(Precision.round(sum.get(), 2))
+                .assetsInUsd(Precision.round(sum.get() / currencyPrices.get(Currency.USD), 2))
                 .totalInCash(calculateTotalInCash(portfolioDto, currencyPrices))
                 .totalInStocks(calculateTotalInType(portfolioDto, currencyPrices, InstrumentType.STOCK))
                 .totalInBounds(calculateTotalInType(portfolioDto, currencyPrices, InstrumentType.BOND))
@@ -112,7 +113,7 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
             result += entry.getValue().getBalance() * currencyPrices.getOrDefault(entry.getKey(), 1.0);
         }
         log.info("Calculated total in cash {}", result);
-        return Math.floor(result * 100) / 100;
+        return Precision.round(result, 2);
     }
 
     private double calculateTotalInType(PortfolioDto portfolioDto, Map<Currency, Double> currencyPrices,
@@ -127,6 +128,6 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
                 });
 
         log.info("Calculated total in {} {}", type, sum);
-        return Math.floor(sum.get() * 100) / 100;
+        return Precision.round(sum.get(), 2);
     }
 }

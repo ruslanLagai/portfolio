@@ -4,6 +4,7 @@ import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.operations.Status;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -39,6 +40,6 @@ public class RevenueCalculator implements Calculator {
                 .reduce(0.0, Double::sum);
         var diff = sold - bought;
 
-        return Math.floor(diff * 100) / 100;
+        return Precision.round(diff, 2);
     }
 }
