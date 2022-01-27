@@ -37,6 +37,6 @@ public interface TinkoffClient {
     PriceResponse getCurrentPrice(@RequestParam String figi, @RequestParam int depth);
 
     @GetMapping("/portfolio/currencies")
-    Currencies getCurrencies(@RequestParam String accountId);
+    Currencies getCurrencies(@RequestParam String brokerAccountId);
 }
 
