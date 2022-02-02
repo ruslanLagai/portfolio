@@ -9,6 +9,11 @@
       "name": "tinkoff.api.url",
       "type": "java.lang.String",
       "description": "Tinkoff api url."
+    },
+    {
+      "name": "yahoo.finance.api.url",
+      "type": "java.lang.String",
+      "description": "Yahoo finance url."
     }
   ]
 }

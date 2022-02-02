@@ -2,7 +2,10 @@ tinkoff:
   api:
     token: ${TINKOFF_API_TOKEN}
     url: https://api-invest.tinkoff.ru/openapi
-
+yahoo:
+  finance:
+    api:
+      url: https://query1.finance.yahoo.com/v10/finance/quoteSummary
 server:
   servlet:
     context-path:
@@ -22,3 +25,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: create-drop
+  flyway:
+    enabled: false
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    schemas: portfolio

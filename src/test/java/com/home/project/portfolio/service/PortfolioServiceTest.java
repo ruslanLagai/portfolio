@@ -114,6 +114,11 @@ class PortfolioServiceTest {
             return new PortfolioService(tinkoffClient, accountProcessors);
         }
 
+        @Bean
+        public CurrencyService currencyService(TinkoffClient tinkoffClient) {
+            return new CurrencyService(tinkoffClient);
+        }
+
         @MockBean
         OperationsService operationsService;
     }

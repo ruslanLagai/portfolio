@@ -1,21 +1,22 @@
 package com.home.project.portfolio.processor;
 
-import com.home.project.portfolio.client.TinkoffClient;
 import com.home.project.portfolio.model.InstrumentType;
 import com.home.project.portfolio.model.portfolio.AveragePositionItem;
 import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.portfolio.Distribution;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.model.response.PortfolioDto;
+import com.home.project.portfolio.service.CurrencyService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.math3.util.Precision;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.testcontainers.shaded.com.google.common.util.concurrent.AtomicDouble;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.home.project.portfolio.utils.Constants.CURRENCY_FIGI_MAP;
 
 /**
  * Class to populate portfolioDto by assets distribution
@@ -24,15 +25,10 @@ import java.util.stream.Collectors;
 @Log4j2
 public class PortfolioDistributionProcessorImpl implements AccountProcessor {
 
-    private static final Map<Currency, String> CURRENCY_FIGI_MAP = Map.of(
-            Currency.USD, "BBG0013HGFT4",
-            Currency.EUR, "BBG0013HJJ31"
-    );
+    private final CurrencyService currencyService;
 
-    private final TinkoffClient tinkoffClient;
-
-    public PortfolioDistributionProcessorImpl(TinkoffClient tinkoffClient) {
-        this.tinkoffClient = tinkoffClient;
+    public PortfolioDistributionProcessorImpl(CurrencyService currencyService) {
+        this.currencyService = currencyService;
     }
 
     @Override
@@ -56,21 +52,7 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
         log.info("Collected currencies size {}", existedCurrencies.size());
 
         // collect prices
-        Map<Currency, Double> currencyPrices = new HashMap<>();
-        for (Currency currency : existedCurrencies) {
-
-            log.info("Getting current price for currency {}", currency.name());
-
-            var response = tinkoffClient.getCurrentPrice(CURRENCY_FIGI_MAP.get(currency), 1);
-            if (!response.getStatus().equalsIgnoreCase("ok")
-                    || response.getPayload() == null) {
-                log.warn("Failed to get price for {}", currency.name());
-                continue;
-            }
-            currencyPrices.put(currency, response.getPayload().getLastPrice());
-
-            log.debug("Current price for {} is {}", currency.name(), response.getPayload().getLastPrice());
-        }
+        Map<Currency, Double> currencyPrices = currencyService.getCurrencyPrices(existedCurrencies);
 
         // total assets
         var sum = new AtomicDouble();
