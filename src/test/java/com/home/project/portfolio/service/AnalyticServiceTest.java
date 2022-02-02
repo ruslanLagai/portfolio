@@ -6,6 +6,7 @@ import com.home.project.portfolio.repository.OperationRepository;
 import com.home.project.portfolio.repository.StockRepository;
 import com.home.project.portfolio.utils.OperationGroups;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ class AnalyticServiceTest {
 
 
     @Test
+    @Disabled
     @DisplayName("All time")
     void analyzeAccount() {
         var result = analyticService.analyzeAccount(ACCOUNT_ID, Period.ALL_TIME);
