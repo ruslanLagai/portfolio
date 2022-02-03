@@ -8,14 +8,12 @@ import com.home.project.portfolio.repository.CompanyRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -36,10 +34,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 @SpringBootTest
 @ContextConfiguration(initializers = StockSectorServiceTest.Initializer.class)
-@ExtendWith(SpringExtension.class)
 class StockSectorServiceTest extends AbstractDbTest {
 
     private final Portfolio portfolio = TestUtils.readPositions();
+
+    static {
+        mySQLContainer.start();
+    }
 
     @Autowired
     CompanyRepository companyRepository;
