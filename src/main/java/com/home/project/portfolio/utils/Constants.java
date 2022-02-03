@@ -53,4 +53,9 @@ public class Constants {
         PERIODS_TO_SEARCH_OLDER_OPERATIONS.add(Period.ofYears(5));
 
     }
+
+    public static final Map<Currency, String> CURRENCY_FIGI_MAP = Map.of(
+            Currency.USD, "BBG0013HGFT4",
+            Currency.EUR, "BBG0013HJJ31"
+    );
 }

@@ -5,12 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.home.project.portfolio.model.operations.Operations;
 import com.home.project.portfolio.model.portfolio.Portfolio;
-import com.home.project.portfolio.model.portfolio.Position;
-import lombok.val;
 
 import java.io.File;
 
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtils {
 

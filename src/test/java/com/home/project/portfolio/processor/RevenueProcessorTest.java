@@ -113,7 +113,7 @@ class RevenueProcessorTest extends AbstractProcessorTest {
             assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1060.0));
             assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1060.0));
             assertThat(analyticDataList.get(0).getRevenue(), Matchers.greaterThan(1060.0));
-            assertThat(analyticDataList.get(0).getRevenuePercentage(), Matchers.equalTo(15.5));
+            assertThat(analyticDataList.get(0).getRevenuePercentage(), Matchers.equalTo(15.57));
             assertThat(analyticDataList.get(0).getCurrency(), Matchers.equalTo(Currency.USD));
             assertThat(analyticDataList.get(0).getCommission(), Matchers.equalTo(0.0));
             assertThat(analyticDataList.get(0).getFigi(), Matchers.equalTo("BBG000B9XRY4"));
@@ -217,9 +217,9 @@ class RevenueProcessorTest extends AbstractProcessorTest {
             assertThat(analyticDataList.get(0).getTicker(), Matchers.equalTo(AAPL));
             assertThat(analyticDataList.get(0).getRevenue(), Matchers.lessThan(200.0));
             assertThat(analyticDataList.get(0).getDividend(), Matchers.equalTo(5.41));
-            assertThat(analyticDataList.get(0).getTotalBoughtSum(), Matchers.equalTo(7743.21));
-            assertThat(analyticDataList.get(0).getTotalSoldSum(), Matchers.equalTo(7936.0));
-            assertThat(analyticDataList.get(0).getRevenuePercentage(), Matchers.equalTo(2.4));
+            assertThat(analyticDataList.get(0).getTotalBoughtSum(), Matchers.equalTo(7743.22));
+            assertThat(analyticDataList.get(0).getTotalSoldSum(), Matchers.equalTo(7936.58));
+            assertThat(analyticDataList.get(0).getRevenuePercentage(), Matchers.equalTo(2.5));
             assertThat(analyticDataList.get(0).getCommission(), Matchers.equalTo(0.0));
             assertThat(analyticDataList.get(0).getCurrency(), Matchers.equalTo(Currency.USD));
             assertThat(analyticDataList.get(0).getFigi(), Matchers.equalTo("BBG000B9XRY4"));

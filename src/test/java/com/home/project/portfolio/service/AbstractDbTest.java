@@ -1,7 +1,9 @@
 package com.home.project.portfolio.service;
 
+import com.home.project.portfolio.client.YahooFinanceClient;
 import com.home.project.portfolio.client.TinkoffClient;
 import com.home.project.portfolio.helpers.YamlPropertySourceFactory;
+import com.home.project.portfolio.repository.CompanyRepository;
 import com.home.project.portfolio.repository.OperationRepository;
 import com.home.project.portfolio.repository.StockRepository;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -34,7 +36,7 @@ public abstract class AbstractDbTest {
     @TestConfiguration
     @Import({FeignAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class})
     @EnableJpaRepositories("com.home.project.portfolio.repository")
-    @EnableFeignClients(clients = TinkoffClient.class)
+    @EnableFeignClients(clients = {TinkoffClient.class, YahooFinanceClient.class})
     @PropertySource(value = "classpath:application-test.yml", factory = YamlPropertySourceFactory.class)
     static class Config {
         @Bean
@@ -46,6 +48,18 @@ public abstract class AbstractDbTest {
         public OperationsService operationsService(TinkoffClient tinkoffClient, OperationRepository operationRepository,
                                                    StockHelperService stockHelperService) {
             return new OperationsService(tinkoffClient, operationRepository, stockHelperService);
+        }
+
+        @Bean
+        public StockSectorService stockSectorService(YahooFinanceClient alphaVantageClient,
+                                                     CompanyRepository companyRepository,
+                                                     CurrencyService currencyService) {
+            return new StockSectorService(alphaVantageClient, companyRepository, currencyService);
+        }
+
+        @Bean
+        public CurrencyService currencyService(TinkoffClient tinkoffClient) {
+             return new CurrencyService(tinkoffClient);
         }
 
         @Bean

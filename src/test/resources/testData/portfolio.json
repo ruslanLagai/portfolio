@@ -1,0 +1,356 @@
+{
+  "positions": [
+    {
+      "figi": "BBG000GW06J7",
+      "ticker": "EBS",
+      "isin": "US29089Q1058",
+      "instrumentType": "STOCK",
+      "balance": 1,
+      "blocked": 0,
+      "lots": 1,
+      "name": "Emergent BioSolutions Inc",
+      "averagePositionPrice": {
+        "currency": "USD",
+        "value": 63.22
+      },
+      "averagePositionPriceNoNkd": null,
+      "expectedYield": {
+        "currency": "USD",
+        "value": -16.59
+      }
+    },
+    {
+      "figi": "BBG0019T5SG0",
+      "ticker": "TDOC",
+      "isin": "US87918A1051",
+      "instrumentType": "STOCK",
+      "balance": 1,
+      "blocked": 0,
+      "lots": 1,
+      "name": "Teladoc Health Inc",
+      "averagePositionPrice": {
+        "currency": "USD",
+        "value": 115
+      },
+      "averagePositionPriceNoNkd": null,
+      "expectedYield": {
+        "currency": "USD",
+        "value": -42.5
+      }
+    },
+    {
+      "figi": "BBG0077VNXV6",
+      "ticker": "PYPL",
+      "isin": "US70450Y1038",
+      "instrumentType": "STOCK",
+      "balance": 2,
+      "blocked": 0,
+      "lots": 2,
+      "name": "PayPal Holdings",
+      "averagePositionPrice": {
+        "currency": "USD",
+        "value": 181.5
+      },
+      "averagePositionPriceNoNkd": null,
+      "expectedYield": {
+        "currency": "USD",
+        "value": -37.93
+      }
+    },
+    {
+      "figi": "BBG004S681B4",
+      "ticker": "NLMK",
+      "isin": "RU0009046452",
+      "instrumentType": "STOCK",
+      "balance": 70,
+      "blocked": 0,
+      "lots": 7,
+      "name": "НЛМК",
+      "averagePositionPrice": {
+        "currency": "RUB",
+        "value": 190.48
+      },
+      "averagePositionPriceNoNkd": null,
+      "expectedYield": {
+        "currency": "RUB",
+        "value": 1148.4
+      }
+    },
+    {
+      "figi": "BBG0047315Y7",
+      "ticker": "SBERP",
+      "isin": "RU0009029557",
+      "instrumentType": "STOCK",
+      "balance": 30,
+      "blocked": 0,
+      "lots": 3,
+      "name": "Сбер Банк - привилегированные акции",
+      "averagePositionPrice": {
+        "currency": "RUB",
+        "value": 281.65
+      },
+      "averagePositionPriceNoNkd": null,
+      "expectedYield": {
+        "currency": "RUB",
+        "value": -1275.8
+      }
+    },
+    {
+      "figi": "BBG00QPYJ5H0",
+      "ticker": "TCSG",
+      "isin": "TCS7238U2033",
+      "instrumentType": "STOCK",
+      "balance": 1,
+      "blocked": 0,
+      "lots": 1,
+      "name": "TCS Group",
+      "averagePositionPrice": {
+        "currency": "RUB",
+        "value": 3223.6
+      },
+      "averagePositionPriceNoNkd": null,
+      "expectedYield": {
+        "currency": "RUB",
+        "value": 1604.4
+      }
+    },
+    {
+      "figi": "BBG0016MQ7C5",
+      "ticker": "TPIC",
+      "isin": "US87266J1043",
+      "instrumentType": "STOCK",
+      "balance": 1,
+      "blocked": 0,
+      "lots": 1,
+      "name": "TPI Composites Inc",
+      "averagePositionPrice": {
+        "currency": "USD",
+        "value": 64
+      },
+      "averagePositionPriceNoNkd": null,
+      "expectedYield": {
+        "currency": "USD",
+        "value": -51.87
+      }
+    },
+    {
+      "figi": "BBG005VKB7D7",
+      "ticker": "FXCN",
+      "isin": "IE00BD3QFB18",
+      "instrumentType": "ETF",
+      "balance": 3,
+      "blocked": 0,
+      "lots": 3,
+      "name": "FinEx Акции китайских компаний",
+      "averagePositionPrice": {
+        "currency": "RUB",
+        "value": 3887.5
+      },
+      "averagePositionPriceNoNkd": null,
+      "expectedYield": {
+        "currency": "RUB",
+        "value": -2304
+      }
+    },
+    {
+      "figi": "BBG0013HGFT4",
+      "ticker": "USD000UTSTOM",
+      "isin": null,
+      "instrumentType": "CURRENCY",
+      "balance": 207.97,
+      "blocked": 0,
+      "lots": 0,
+      "name": "Доллар США",
+      "averagePositionPrice": {
+        "currency": "RUB",
+        "value": 76.75
+      },
+      "averagePositionPriceNoNkd": null,
+      "expectedYield": {
+        "currency": "RUB",
+        "value": 140.38
+      }
+    }
+  ],
+  "prices": {
+    "BBG0019T5SG0": {
+      "figi": "BBG0019T5SG0",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.01,
+      "faceValue": 0,
+      "lastPrice": 72.5,
+      "closePrice": 72.9,
+      "limitUp": 74.41,
+      "limitDown": 70.59
+    },
+    "BBG0013HGFT4": {
+      "figi": "BBG0013HGFT4",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.0025,
+      "faceValue": 0,
+      "lastPrice": 77.425,
+      "closePrice": 77.425,
+      "limitUp": 0,
+      "limitDown": 0
+    },
+    "BBG0016MQ7C5": {
+      "figi": "BBG0016MQ7C5",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.01,
+      "faceValue": 0,
+      "lastPrice": 12.13,
+      "closePrice": 12.19,
+      "limitUp": 12.5,
+      "limitDown": 11.76
+    },
+    "BBG005VKB7D7": {
+      "figi": "BBG005VKB7D7",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.5,
+      "faceValue": 0,
+      "lastPrice": 3119.5,
+      "closePrice": 3143,
+      "limitUp": 0,
+      "limitDown": 0
+    },
+    "BBG00QPYJ5H0": {
+      "figi": "BBG00QPYJ5H0",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.2,
+      "faceValue": 0,
+      "lastPrice": 4828,
+      "closePrice": 4866.4,
+      "limitUp": 0,
+      "limitDown": 0
+    },
+    "BBG005F1DK91": {
+      "figi": "BBG005F1DK91",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.01,
+      "faceValue": 0,
+      "lastPrice": 8.72,
+      "closePrice": 8.72,
+      "limitUp": 9.22,
+      "limitDown": 8.22
+    },
+    "BBG00ZGF7771": {
+      "figi": "BBG00ZGF7771",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.01,
+      "faceValue": 0,
+      "lastPrice": 189.17,
+      "closePrice": 191.97,
+      "limitUp": 211.67,
+      "limitDown": 167.33
+    },
+    "BBG0077VNXV6": {
+      "figi": "BBG0077VNXV6",
+      "depth": 1,
+      "bids": [
+        {
+          "price": 162.73,
+          "quantity": 1
+        }
+      ],
+      "asks": [
+        {
+          "price": 163.23,
+          "quantity": 1
+        }
+      ],
+      "minPriceIncrement": 0.01,
+      "faceValue": 0,
+      "lastPrice": 162.53,
+      "closePrice": 163.54,
+      "limitUp": 163.92,
+      "limitDown": 162.05
+    },
+    "BBG0047315Y7": {
+      "figi": "BBG0047315Y7",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.01,
+      "faceValue": 0,
+      "lastPrice": 239.12,
+      "closePrice": 240.2,
+      "limitUp": 0,
+      "limitDown": 0
+    },
+    "BBG004S681B4": {
+      "figi": "BBG004S681B4",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.02,
+      "faceValue": 0,
+      "lastPrice": 206.88,
+      "closePrice": 207.5,
+      "limitUp": 0,
+      "limitDown": 0
+    },
+    "BBG000GW06J7": {
+      "figi": "BBG000GW06J7",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.01,
+      "faceValue": 0,
+      "lastPrice": 46.63,
+      "closePrice": 46.97,
+      "limitUp": 47.85,
+      "limitDown": 45.57
+    },
+    "BBG003CVJP50": {
+      "figi": "BBG003CVJP50",
+      "depth": 1,
+      "bids": [],
+      "asks": [],
+      "minPriceIncrement": 0.01,
+      "faceValue": 0,
+      "lastPrice": 61.25,
+      "closePrice": 61.6,
+      "limitUp": 66.38,
+      "limitDown": 56.42
+    }
+  },
+  "distribution": {
+    "totalInStocks": 98805.12,
+    "totalInFunds": 9358.5,
+    "totalInBounds": 0,
+    "totalInCash": 16626.18,
+    "assetsInRub": 124789.8,
+    "assetsInUsd": 1611.75
+  },
+  "cash": {
+    "USD": {
+      "balance": 207.97,
+      "currentPrice": 77.425,
+      "averagePrice": 76.75
+    },
+    "EUR": {
+      "balance": 0,
+      "currentPrice": 87.8675,
+      "averagePrice": 0
+    },
+    "RUB": {
+      "balance": 524.1,
+      "currentPrice": 0,
+      "averagePrice": 0
+    }
+  }
+}
