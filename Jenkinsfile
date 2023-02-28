@@ -19,8 +19,7 @@ pipeline {
 
         stage('Get code') {
             steps {
-                // Get some code from a GitHub repository
-                git branch: 'jenkins', url: 'https://github.com/ruslanLagai/portfolio'
+                git branch: 'master', url: 'https://github.com/ruslanLagai/portfolio'
                 sh 'chmod +x mvnw'
             }
         }
@@ -36,7 +35,7 @@ pipeline {
 
         stage('Publish tests') {
             steps {
-                publishCoverage adapters: [jacocoAdapter('target/site/jacoco-aggregate/jacoco.xml')], sourceFileResolver: sourceFiles('NEVER_STORE')
+                publishCoverage adapters: [jacocoAdapter('target/site/jacoco/jacoco.xml')], sourceFileResolver: sourceFiles('NEVER_STORE')
             }
         }
 
