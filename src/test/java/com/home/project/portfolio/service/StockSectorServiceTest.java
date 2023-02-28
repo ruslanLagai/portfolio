@@ -6,6 +6,7 @@ import com.home.project.portfolio.model.portfolio.Portfolio;
 import com.home.project.portfolio.model.portfolio.Sector;
 import com.home.project.portfolio.repository.CompanyRepository;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author rlagay
  */
+@Disabled(value = "Integration test with a real service id")
 @ActiveProfiles(TEST_PROFILE)
 @DisplayName("Test sector distribution")
 @Testcontainers

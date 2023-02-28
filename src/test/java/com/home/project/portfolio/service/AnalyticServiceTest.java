@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Class to test {@link AnalyticService}
  */
+@Disabled(value = "Integration test with a real service id")
 @DisplayName("Test analytic")
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

@@ -7,6 +7,7 @@ import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.repository.StockRepository;
 import com.home.project.portfolio.utils.Constants;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Class to test {@link StockHelperService}
  */
+@Disabled(value = "Integration test with a real service id")
 @ActiveProfiles(value = {CUSTOM_DB_TEST_PROFILE, TEST_PROFILE})
 @DisplayName("Test helper service")
 @Testcontainers
