@@ -6,6 +6,7 @@ import com.home.project.portfolio.model.operations.StockAvailability;
 import com.home.project.portfolio.model.portfolio.Account;
 import com.home.project.portfolio.processor.AccountProcessor;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Class to test {@link PortfolioService}
  */
+@Disabled(value = "Integration test with a real service id")
 @DisplayName("Test Tinkoff service")
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles(TEST_PROFILE)
