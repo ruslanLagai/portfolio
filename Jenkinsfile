@@ -34,7 +34,7 @@ pipeline {
 
         stage('Publish tests') {
             steps {
-                publishCoverage adapters: [jacocoAdapter('target/site/jacoco/jacoco.xml')], sourceFileResolver: sourceFiles('NEVER_STORE')
+                publishCoverage adapters: [jacocoAdapter('target/site/jacoco/jacoco.xml')], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
             }
         }
 
