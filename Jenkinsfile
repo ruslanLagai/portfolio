@@ -19,7 +19,7 @@ pipeline {
 
         stage('Get code') {
             steps {
-                git branch: 'master', url: 'https://github.com/ruslanLagai/portfolio'
+               // git branch: 'master', url: 'https://github.com/ruslanLagai/portfolio'
                 sh 'chmod +x mvnw'
             }
         }
@@ -29,7 +29,7 @@ pipeline {
                 TINKOFF_API_TOKEN = credentials('TINKOFF_API_TOKEN')
             }
             steps {
-                sh './mvnw clean package -DTINKOFF_API_TOKEN='$TINKOFF_API_TOKEN''
+                sh './mvnw clean package -DTINKOFF_API_TOKEN="$TINKOFF_API_TOKEN"'
             }
         }
 
