@@ -17,14 +17,13 @@ pipeline {
             }
         }
 
-        stage('Get code') {
+        stage('Fix maven executable') {
             steps {
-               // git branch: 'master', url: 'https://github.com/ruslanLagai/portfolio'
                 sh 'chmod +x mvnw'
             }
         }
 
-        stage('Gradle build') {
+        stage('Maven build') {
             environment {
                 TINKOFF_API_TOKEN = credentials('TINKOFF_API_TOKEN')
             }
@@ -63,7 +62,7 @@ pipeline {
 
     post {
         always {
-            junit '**/target/surefire-reports/*.xml'
+            junit skipPublishingChecks: true, testResults: '**/target/surefire-reports/*.xml'
         }
     }
 }
