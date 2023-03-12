@@ -15,7 +15,7 @@ public enum StockAvailability {
     NOT_AVAILABLE("NotAvailableForTrading"),
     AVAILABLE("NormalTrading");
 
-    protected final String status;
+    private final String status;
 
     @JsonCreator
     public static StockAvailability parse(String value) {

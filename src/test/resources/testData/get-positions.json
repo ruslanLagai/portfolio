@@ -1,0 +1,85 @@
+{
+  "money": [
+    {
+      "currency": "eur",
+      "units": "0",
+      "nano": 240000000
+    },
+    {
+      "currency": "rub",
+      "units": "462062",
+      "nano": 910000000
+    },
+    {
+      "currency": "usd",
+      "units": "505",
+      "nano": 230000000
+    },
+    {
+      "currency": "hkd",
+      "units": "0",
+      "nano": 30000000
+    }
+  ],
+  "blocked": [
+    {
+      "currency": "rub",
+      "units": "170190",
+      "nano": 400000000
+    }
+  ],
+  "securities": [
+    {
+      "figi": "US0900401060",
+      "blocked": "3",
+      "balance": "0"
+    },
+    {
+      "figi": "BBG0077VNXV6",
+      "blocked": "0",
+      "balance": "11"
+    },
+    {
+      "figi": "US19260Q1076",
+      "blocked": "2",
+      "balance": "0"
+    },
+    {
+      "figi": "BBG004S681B4",
+      "blocked": "2000",
+      "balance": "-2000"
+    },
+    {
+      "figi": "BBG006DZTJ56",
+      "blocked": "0",
+      "balance": "33"
+    },
+    {
+      "figi": "BBG004731032",
+      "blocked": "0",
+      "balance": "25"
+    },
+    {
+      "figi": "BBG004730N88",
+      "blocked": "0",
+      "balance": "-1500"
+    },
+    {
+      "figi": "BBG004RVFFC0",
+      "blocked": "0",
+      "balance": "-750"
+    },
+    {
+      "figi": "BBG00HTN2CQ3",
+      "blocked": "0",
+      "balance": "2"
+    },
+    {
+      "figi": "US4234031049",
+      "blocked": "1",
+      "balance": "0"
+    }
+  ],
+  "limitsLoadingInProgress": false,
+  "futures": []
+}

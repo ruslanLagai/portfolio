@@ -12,8 +12,10 @@ import org.apache.commons.math3.util.Precision;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.testcontainers.shaded.com.google.common.util.concurrent.AtomicDouble;
+import ru.tinkoff.piapi.core.models.Positions;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.home.project.portfolio.utils.Constants.CURRENCY_FIGI_MAP;
@@ -32,10 +34,10 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
     }
 
     @Override
-    public void apply(String accountId, PortfolioDto portfolioDto) {
+    public void apply(CompletableFuture<Positions> positions, String accountId, PortfolioDto portfolioDto) {
 
         Map<String, Currency> currencyByFigi = portfolioDto.getPositions().stream()
-                .collect(Collectors.toMap(Position::getFigi, position -> position.getAveragePositionPrice().getCurrency()));
+                .collect(Collectors.toMap(Position::getFigi, position -> position.getAveragePositionPrice().currency()));
         Map<String, Double> lotsByFigi = portfolioDto.getPositions().stream()
                 .collect(Collectors.toMap(Position::getFigi, Position::getBalance));
 
@@ -45,7 +47,7 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
                 .collect(Collectors.toSet());
         portfolioDto.getPositions().stream()
                 .map(Position::getAveragePositionPrice)
-                .map(AveragePositionItem::getCurrency)
+                .map(AveragePositionItem::currency)
                 .filter(currency -> !currency.equals(Currency.RUB))
                 .forEach(existedCurrencies::add);
 
@@ -81,11 +83,11 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
     private void populateCashData(@NotNull PortfolioDto portfolioDto, Map<Currency, Double> currencyPrices) {
         portfolioDto.getCash().forEach((currency, currencyDto) -> {
             var figi = CURRENCY_FIGI_MAP.getOrDefault(currency, "default");
-            currencyDto.setCurrentPrice(currencyPrices.getOrDefault(currency, 0.0));
+            currencyDto.setCurrentPrice(currencyPrices.getOrDefault(currency, 1.0));
             portfolioDto.getPositions().stream()
                     .filter(position -> position.getInstrumentType().equals(InstrumentType.CURRENCY))
                     .filter(position -> position.getFigi().equals(figi))
-                    .forEach(position -> currencyDto.setAveragePrice(position.getAveragePositionPrice().getValue()));
+                    .forEach(position -> currencyDto.setAveragePrice(position.getAveragePositionPrice().value()));
         });
     }
 
@@ -105,7 +107,7 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
                 .filter(position -> position.getInstrumentType().equals(type))
                 .forEach(position -> {
                     var result = position.getBalance() * portfolioDto.getPrices().get(position.getFigi()).getLastPrice()
-                            *  currencyPrices.getOrDefault(position.getAveragePositionPrice().getCurrency(), 1.0);
+                            *  currencyPrices.getOrDefault(position.getAveragePositionPrice().currency(), 1.0);
                     sum.addAndGet(result);
                 });
 

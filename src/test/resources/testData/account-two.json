@@ -1,0 +1,9 @@
+{
+  "id": "111111111112",
+  "type": "ACCOUNT_TYPE_TINKOFF_IIS",
+  "name": "ИИС",
+  "status": "ACCOUNT_STATUS_CLOSED",
+  "openedDate": "2019-03-02T00:00:00Z",
+  "closedDate": "2022-08-24T00:00:00Z",
+  "accessLevel": "ACCOUNT_ACCESS_LEVEL_FULL_ACCESS"
+}

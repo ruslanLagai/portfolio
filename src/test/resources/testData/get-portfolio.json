@@ -1,0 +1,523 @@
+{
+  "totalAmountShares": {
+    "currency": "rub",
+    "units": "-334096",
+    "nano": -730000000
+  },
+  "totalAmountBonds": {
+    "currency": "rub",
+    "units": "0",
+    "nano": 0
+  },
+  "totalAmountEtf": {
+    "currency": "rub",
+    "units": "0",
+    "nano": 0
+  },
+  "totalAmountCurrencies": {
+    "currency": "rub",
+    "units": "670368",
+    "nano": 520000000
+  },
+  "totalAmountFutures": {
+    "currency": "rub",
+    "units": "0",
+    "nano": 0
+  },
+  "expectedYield": {
+    "units": "-16",
+    "nano": -510000000
+  },
+  "positions": [
+    {
+      "figi": "BBG004731032",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "25",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "rub",
+        "units": "4037",
+        "nano": 0
+      },
+      "expectedYield": {
+        "units": "2150",
+        "nano": 260000000
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "rub",
+        "units": "4123",
+        "nano": 0
+      },
+      "averagePositionPriceFifo": {
+        "currency": "rub",
+        "units": "4037",
+        "nano": 0
+      },
+      "quantityLots": {
+        "units": "25",
+        "nano": 0
+      }
+    },
+    {
+      "figi": "BBG004S681B4",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "0",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "rub",
+        "units": "0",
+        "nano": 0
+      },
+      "expectedYield": {
+        "units": "0",
+        "nano": 0
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "rub",
+        "units": "126",
+        "nano": 560000000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "rub",
+        "units": "0",
+        "nano": 0
+      },
+      "quantityLots": {
+        "units": "0",
+        "nano": 0
+      }
+    },
+    {
+      "figi": "BBG006DZTJ56",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "33",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "usd",
+        "units": "6",
+        "nano": 500000000
+      },
+      "expectedYield": {
+        "units": "-198",
+        "nano": -380000000
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "usd",
+        "units": "0",
+        "nano": 490000000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "usd",
+        "units": "6",
+        "nano": 500000000
+      },
+      "quantityLots": {
+        "units": "33",
+        "nano": 0
+      }
+    },
+    {
+      "figi": "BBG0077VNXV6",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "11",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "usd",
+        "units": "137",
+        "nano": 620000000
+      },
+      "expectedYield": {
+        "units": "-667",
+        "nano": -280000000
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "usd",
+        "units": "76",
+        "nano": 960000000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "usd",
+        "units": "137",
+        "nano": 620000000
+      },
+      "quantityLots": {
+        "units": "11",
+        "nano": 0
+      }
+    },
+    {
+      "figi": "US4234031049",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "1",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "usd",
+        "units": "0",
+        "nano": 0
+      },
+      "expectedYield": {
+        "units": "0",
+        "nano": 0
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "usd",
+        "units": "10",
+        "nano": 0
+      },
+      "averagePositionPriceFifo": {
+        "currency": "usd",
+        "units": "0",
+        "nano": 0
+      },
+      "quantityLots": {
+        "units": "1",
+        "nano": 0
+      }
+    },
+    {
+      "figi": "US19260Q1076",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "2",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "usd",
+        "units": "0",
+        "nano": 0
+      },
+      "expectedYield": {
+        "units": "0",
+        "nano": 0
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "usd",
+        "units": "28",
+        "nano": 500000000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "usd",
+        "units": "0",
+        "nano": 0
+      },
+      "quantityLots": {
+        "units": "2",
+        "nano": 0
+      }
+    },
+    {
+      "figi": "BBG004RVFFC0",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "-750",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "rub",
+        "units": "336",
+        "nano": 800000000
+      },
+      "expectedYield": {
+        "units": "325",
+        "nano": 20000000
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "rub",
+        "units": "336",
+        "nano": 400000000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "rub",
+        "units": "336",
+        "nano": 800000000
+      },
+      "quantityLots": {
+        "units": "-750",
+        "nano": 0
+      }
+    },
+    {
+      "figi": "BBG0013HGFT4",
+      "instrumentType": "currency",
+      "quantity": {
+        "units": "505",
+        "nano": 230000000
+      },
+      "averagePositionPrice": {
+        "currency": "rub",
+        "units": "74",
+        "nano": 570000000
+      },
+      "expectedYield": {
+        "units": "419",
+        "nano": 340000000
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "rub",
+        "units": "75",
+        "nano": 402500000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "rub",
+        "units": "74",
+        "nano": 572500000
+      },
+      "quantityLots": {
+        "units": "505",
+        "nano": 230000000
+      }
+    },
+    {
+      "figi": "RUB000UTSTOM",
+      "instrumentType": "currency",
+      "quantity": {
+        "units": "632253",
+        "nano": 310000000
+      },
+      "averagePositionPrice": {
+        "currency": "rub",
+        "units": "1",
+        "nano": 0
+      },
+      "expectedYield": {
+        "units": "0",
+        "nano": 0
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "rub",
+        "units": "1",
+        "nano": 0
+      },
+      "averagePositionPriceFifo": {
+        "currency": "rub",
+        "units": "1",
+        "nano": 0
+      },
+      "quantityLots": {
+        "units": "632253",
+        "nano": 310000000
+      }
+    },
+    {
+      "figi": "BBG0013HJJ31",
+      "instrumentType": "currency",
+      "quantity": {
+        "units": "0",
+        "nano": 240000000
+      },
+      "averagePositionPrice": {
+        "currency": "rub",
+        "units": "62",
+        "nano": 820000000
+      },
+      "expectedYield": {
+        "units": "4",
+        "nano": 250000000
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "rub",
+        "units": "80",
+        "nano": 527500000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "rub",
+        "units": "62",
+        "nano": 820000000
+      },
+      "quantityLots": {
+        "units": "0",
+        "nano": 240000000
+      }
+    },
+    {
+      "figi": "BBG0013HSW87",
+      "instrumentType": "currency",
+      "quantity": {
+        "units": "0",
+        "nano": 30000000
+      },
+      "averagePositionPrice": {
+        "currency": "rub",
+        "units": "9",
+        "nano": 767000000
+      },
+      "expectedYield": {
+        "units": "0",
+        "nano": -10000000
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "rub",
+        "units": "9",
+        "nano": 600000000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "rub",
+        "units": "9",
+        "nano": 775000000
+      },
+      "quantityLots": {
+        "units": "0",
+        "nano": 30000000
+      }
+    },
+    {
+      "figi": "US0900401060",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "3",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "usd",
+        "units": "0",
+        "nano": 0
+      },
+      "expectedYield": {
+        "units": "0",
+        "nano": 0
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "usd",
+        "units": "7",
+        "nano": 760000000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "usd",
+        "units": "0",
+        "nano": 0
+      },
+      "quantityLots": {
+        "units": "3",
+        "nano": 0
+      }
+    },
+    {
+      "figi": "BBG00HTN2CQ3",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "2",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "usd",
+        "units": "36",
+        "nano": 170000000
+      },
+      "expectedYield": {
+        "units": "-61",
+        "nano": -440000000
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "usd",
+        "units": "5",
+        "nano": 450000000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "usd",
+        "units": "36",
+        "nano": 170000000
+      },
+      "quantityLots": {
+        "units": "2",
+        "nano": 0
+      }
+    },
+    {
+      "figi": "BBG004730N88",
+      "instrumentType": "share",
+      "quantity": {
+        "units": "-1500",
+        "nano": 0
+      },
+      "averagePositionPrice": {
+        "currency": "rub",
+        "units": "171",
+        "nano": 330000000
+      },
+      "expectedYield": {
+        "units": "-571",
+        "nano": -790000000
+      },
+      "averagePositionPricePt": {
+        "units": "0",
+        "nano": 0
+      },
+      "currentPrice": {
+        "currency": "rub",
+        "units": "171",
+        "nano": 710000000
+      },
+      "averagePositionPriceFifo": {
+        "currency": "rub",
+        "units": "171",
+        "nano": 330000000
+      },
+      "quantityLots": {
+        "units": "-150",
+        "nano": 0
+      }
+    }
+  ]
+}

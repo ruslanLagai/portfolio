@@ -2,9 +2,6 @@ package com.home.project.portfolio.controller;
 
 import com.home.project.portfolio.model.portfolio.Account;
 import com.home.project.portfolio.service.PortfolioService;
-import feign.FeignException;
-import feign.Request;
-import feign.RequestTemplate;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -17,9 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.tinkoff.piapi.core.exception.ApiRuntimeException;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -58,22 +55,9 @@ class AccountControllerTest {
 
     @SneakyThrows
     @Test
-    @DisplayName("Unauthorized test")
-    void testGetStocks() {
-        when(portfolioService.getAccounts()).thenThrow(new FeignException.Unauthorized("",
-                Request.create(Request.HttpMethod.GET, "url", Map.of(), null, new RequestTemplate()), null));
-
-        mockMvc.perform(get("/accounts")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
-
-    @SneakyThrows
-    @Test
     @DisplayName("Feign exception test")
     void testFeignGetStocks() {
-        when(portfolioService.getAccounts()).thenThrow(new FeignException.InternalServerError("",
-                Request.create(Request.HttpMethod.GET, "url", Map.of(), null, new RequestTemplate()), null));
+        when(portfolioService.getAccounts()).thenThrow(new ApiRuntimeException("", "", new RuntimeException(), ""));
 
         mockMvc.perform(get("/accounts")
                         .contentType(MediaType.APPLICATION_JSON))

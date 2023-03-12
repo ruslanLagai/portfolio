@@ -1,7 +1,7 @@
 tinkoff:
   api:
-    token: ${TINKOFF_API_TOKEN}
-    url: https://api-invest.tinkoff.ru/openapi
+    token: token
+    url: invest-public-api.tinkoff.ru:443
 yahoo:
   finance:
     api:
@@ -10,12 +10,15 @@ server:
   servlet:
     context-path:
   port: 8080
+  tomcat:
+    accesslog:
+      enabled: true
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.mysql.cj.jdbc.MysqlConnectionPoolDataSource
-    url: jdbc:mysql://localhost:3307/portfolio
+    url: jdbc:mysql://localhost:3307/portfolio?allowPublicKeyRetrieval=true
     username: db_user
     password: j&4$R>TqA2
 
@@ -30,3 +33,5 @@ spring:
     baseline-on-migrate: true
     locations: classpath:db/migration
     schemas: portfolio
+  application:
+    name: portfolio

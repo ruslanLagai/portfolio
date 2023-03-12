@@ -42,7 +42,7 @@ public class StockSectorService {
         MultiValueMap<String, Position> tickerBySector = retrieveSector(positionList);
         List<Sector> sectors = new ArrayList<>();
         var currencyPrices = currencyService.getCurrencyPrices(positionList.stream()
-                .map(position -> position.getAveragePositionPrice().getCurrency())
+                .map(position -> position.getAveragePositionPrice().currency())
                 .collect(Collectors.toSet()));
 
         var total = positionList.stream()
@@ -68,8 +68,8 @@ public class StockSectorService {
     }
 
     private Double calculateAsset(Position position, Map<Currency, Double> currencyPrices) {
-        var price = position.getAveragePositionPrice().getValue() + position.getExpectedYield().getValue() / position.getBalance();
-        double currency = currencyPrices.getOrDefault(position.getAveragePositionPrice().getCurrency(), 1.0);
+        var price = position.getAveragePositionPrice().value() + position.getExpectedYield().value() / position.getBalance();
+        double currency = currencyPrices.getOrDefault(position.getAveragePositionPrice().currency(), 1.0);
         log.debug("Current price for {} is {}. currency multiplier {}", position.getTicker(), price, currency);
         return price * currency * position.getBalance();
     }

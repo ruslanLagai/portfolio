@@ -8,9 +8,6 @@ import com.home.project.portfolio.model.portfolio.Distribution;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.model.response.PortfolioDto;
 import com.home.project.portfolio.service.PortfolioService;
-import feign.FeignException;
-import feign.Request;
-import feign.RequestTemplate;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.tinkoff.piapi.core.exception.ApiRuntimeException;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -68,7 +66,6 @@ class PortfolioControllerTest {
                 .andExpect(jsonPath("$.positions.[0].averagePositionPrice.value").value(Matchers.equalTo(3.0)))
                 .andExpect(jsonPath("$.positions.[0].averagePositionPrice.currency").value(Matchers.equalTo("USD")))
                 .andExpect(jsonPath("$.prices.f1.figi").value(Matchers.equalTo("f1")))
-                .andExpect(jsonPath("$.prices.f1.closePrice").value(Matchers.equalTo(34.1)))
                 .andExpect(jsonPath("$.prices.f1.lastPrice").value(Matchers.equalTo(33.0)))
                 .andExpect(jsonPath("$.distribution.totalInFunds").value(Matchers.equalTo(1.0)))
                 .andExpect(jsonPath("$.distribution.totalInStocks").value(Matchers.equalTo(1.0)))
@@ -86,28 +83,14 @@ class PortfolioControllerTest {
 
     @SneakyThrows
     @Test
-    @DisplayName("Unauthorized test")
-    void testGetStocks() {
-        when(portfolioService.getPortfolio(any())).thenThrow(new FeignException.Unauthorized("",
-                Request.create(Request.HttpMethod.GET, "url", Map.of(), null, new RequestTemplate()), null));
-
-        mockMvc.perform(get("/portfolio")
-                        .param("accountId", "123")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
-
-    @SneakyThrows
-    @Test
     @DisplayName("Feign exception test")
     void testFeignGetStocks() {
-        when(portfolioService.getPortfolio(any())).thenThrow(new FeignException.InternalServerError("",
-                Request.create(Request.HttpMethod.GET, "url", Map.of(), null, new RequestTemplate()), null));
+        when(portfolioService.getPortfolio(any())).thenThrow(new ApiRuntimeException("", "", new RuntimeException(), ""));
 
         mockMvc.perform(get("/portfolio")
                         .param("accountId", "123")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadGateway());
+                .andExpect(status().isInternalServerError());
     }
 
     private PortfolioDto mockDto() {
@@ -117,7 +100,6 @@ class PortfolioControllerTest {
         ));
         var overbook = new Overbook();
         overbook.setFigi("f1");
-        overbook.setClosePrice(34.1);
         overbook.setLastPrice(33.0);
 
         var distribution = Distribution.builder()
@@ -148,9 +130,7 @@ class PortfolioControllerTest {
 
     private Position mockPosition(String ticker, String figi) {
         var position = new Position();
-        var avg = new AveragePositionItem();
-        avg.setValue(3.0);
-        avg.setCurrency(Currency.USD);
+        var avg = new AveragePositionItem(Currency.USD, 3.0);
         position.setName("n1");
         position.setTicker(ticker);
         position.setFigi(figi);

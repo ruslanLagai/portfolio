@@ -11,6 +11,8 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -18,6 +20,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -31,6 +34,22 @@ public abstract class AbstractDbTest {
 
     @Container
     protected static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
+                configurableApplicationContext, "spring.datasource.url=" + mySQLContainer.getJdbcUrl(),
+                "spring.datasource.password=" + mySQLContainer.getPassword(),
+                "spring.datasource.username=" + mySQLContainer.getUsername(),
+                "spring.datasource.driver-class-name=" + mySQLContainer.getDriverClassName(),
+                "spring.flyway.url=" + mySQLContainer.getJdbcUrl(),
+                "spring.flyway.password=" + mySQLContainer.getPassword(),
+                "spring.flyway.schemas=" + mySQLContainer.getDatabaseName(),
+                "spring.flyway.user=" + mySQLContainer.getUsername());
+        }
+    }
 
     @Profile(CUSTOM_DB_TEST_PROFILE)
     @TestConfiguration
@@ -57,10 +76,10 @@ public abstract class AbstractDbTest {
             return new StockSectorService(alphaVantageClient, companyRepository, currencyService);
         }
 
-        @Bean
-        public CurrencyService currencyService(TinkoffClient tinkoffClient) {
-             return new CurrencyService(tinkoffClient);
-        }
+//        @Bean
+//        public CurrencyService currencyService(TinkoffClient tinkoffClient) {
+//             return new CurrencyService(tinkoffClient);
+//        }
 
         @Bean
         public DataSource dataSource() {
