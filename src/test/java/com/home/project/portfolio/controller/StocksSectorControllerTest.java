@@ -1,17 +1,11 @@
 package com.home.project.portfolio.controller;
 
-import com.home.project.portfolio.helpers.TestUtils;
-import com.home.project.portfolio.model.portfolio.Portfolio;
 import com.home.project.portfolio.model.portfolio.Sector;
 import com.home.project.portfolio.model.response.PortfolioDto;
 import com.home.project.portfolio.service.PortfolioService;
 import com.home.project.portfolio.service.StockSectorService;
-import feign.FeignException;
-import feign.Request;
-import feign.RequestTemplate;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,9 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.tinkoff.piapi.core.exception.ApiRuntimeException;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -36,14 +30,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Test for {@link StocksSectorController}
  * @author rlagay
  */
-@Disabled("Temporarily disabled due to refactoring")
 @DisplayName("Test sector controller")
 @WebMvcTest(value = StocksSectorController.class)
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 class StocksSectorControllerTest {
-
-    private final Portfolio portfolio = TestUtils.readPositions();
 
     @Autowired
     private MockMvc mockMvc;
@@ -75,22 +66,7 @@ class StocksSectorControllerTest {
     @Test
     @DisplayName("Unauthorized test")
     void getStockSectorsUnauthorized() {
-        when(portfolioService.getPositionsForAccount(any())).thenThrow(new FeignException.Unauthorized("",
-                Request.create(Request.HttpMethod.GET, "url", Map.of(), null, new RequestTemplate()), null,
-            Map.of()));
-
-        mockMvc.perform(get("/sectors?accountId=1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Feign exception test")
-    void getStockSectorsFeignException() {
-        when(portfolioService.getPositionsForAccount(any())).thenThrow(new FeignException.InternalServerError("",
-                Request.create(Request.HttpMethod.GET, "url", Map.of(), null, new RequestTemplate()), null,
-            Map.of()));
+        when(portfolioService.getPositionsForAccount(any())).thenThrow(new ApiRuntimeException("", "", new RuntimeException(), ""));
 
         mockMvc.perform(get("/sectors?accountId=1")
                         .contentType(MediaType.APPLICATION_JSON))

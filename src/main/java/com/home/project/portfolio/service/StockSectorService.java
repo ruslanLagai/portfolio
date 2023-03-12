@@ -68,10 +68,9 @@ public class StockSectorService {
     }
 
     private Double calculateAsset(Position position, Map<Currency, Double> currencyPrices) {
-        var price = position.getAveragePositionPrice().value() + position.getExpectedYield().value() / position.getBalance();
+        var sum = position.getAveragePositionPrice().value() + position.getExpectedYield().value();
         double currency = currencyPrices.getOrDefault(position.getAveragePositionPrice().currency(), 1.0);
-        log.debug("Current price for {} is {}. currency multiplier {}", position.getTicker(), price, currency);
-        return price * currency * position.getBalance();
+        return sum * currency;
     }
 
 

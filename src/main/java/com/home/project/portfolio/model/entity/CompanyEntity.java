@@ -24,7 +24,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 public class CompanyEntity {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 

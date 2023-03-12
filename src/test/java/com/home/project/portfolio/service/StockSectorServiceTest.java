@@ -1,54 +1,54 @@
 package com.home.project.portfolio.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.home.project.portfolio.helpers.TestUtils;
 import com.home.project.portfolio.model.entity.CompanyEntity;
-import com.home.project.portfolio.model.portfolio.Portfolio;
 import com.home.project.portfolio.model.portfolio.Sector;
 import com.home.project.portfolio.repository.CompanyRepository;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.tinkoff.piapi.core.MarketDataService;
 
 import javax.annotation.PostConstruct;
 import java.util.stream.Collectors;
 
-import static com.home.project.portfolio.utils.Profiles.TEST_PROFILE;
+import static com.home.project.portfolio.utils.Constants.CURRENCY_FIGI_MAP;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 /**
  * Test fpr {@link StockSectorService}
  *
  * @author rlagay
  */
-@Disabled(value = "Integration test with a real service id")
-@ActiveProfiles(TEST_PROFILE)
 @DisplayName("Test sector distribution")
 @Testcontainers
 @SpringBootTest
-@ContextConfiguration(initializers = StockSectorServiceTest.Initializer.class)
+@ContextConfiguration(initializers = AbstractDbTest.Initializer.class)
 class StockSectorServiceTest extends AbstractDbTest {
 
-    private final Portfolio portfolio = TestUtils.readPositions();
-
-    static {
-        mySQLContainer.start();
-    }
+    private static final String POSITIONS_RESOURCE = "classpath:testData/positions-list.json";
+    private static final String CURRENCY_PRICES_RESOURCE = "classpath:testData/get-currency-prices.json";
 
     @Autowired
-    CompanyRepository companyRepository;
+    private CompanyRepository companyRepository;
 
     @Autowired
-    StockSectorService stockSectorService;
+    private StockSectorService stockSectorService;
+
+    @MockBean
+    private MarketDataService marketDataService;
 
     @PostConstruct
     public void init() {
@@ -61,13 +61,19 @@ class StockSectorServiceTest extends AbstractDbTest {
     }
 
     @Test
+    @DisplayName("Test sector data")
     void populateSectorData() {
-        var result = stockSectorService.getSectorData(portfolio.getPayload().getPositions());
+        when(marketDataService.getLastPricesSync(eq(CURRENCY_FIGI_MAP.values())))
+            .thenReturn(TestUtils.lastPrices(CURRENCY_PRICES_RESOURCE));
+
+        var result = stockSectorService.getSectorData(TestUtils.getResource(POSITIONS_RESOURCE, new TypeReference<>() {}));
         var saved = companyRepository.findAll();
         assertAll(() -> {
-            assertEquals(99, saved.size());
+            var tdoc = saved.stream().filter(companyEntity -> companyEntity.getTicker().equals("TDOC"))
+                .findFirst().orElseThrow(AssertionError::new).getSector();
+            assertEquals(90, saved.size());
             assertTrue(saved.stream().map(CompanyEntity::getTicker).collect(Collectors.toSet()).contains("TDOC"));
-            assertTrue(saved.stream().map(CompanyEntity::getSector).collect(Collectors.toSet()).contains("Healthcare"));
+            assertEquals("Healthcare", tdoc);
         });
         assertAll(() -> {
             assertFalse(result.isEmpty());
@@ -75,31 +81,16 @@ class StockSectorServiceTest extends AbstractDbTest {
             assertThat(result.stream()
                     .filter(sector -> sector.getSector().equals("Healthcare"))
                     .map(Sector::getSectorWeight)
-                    .findFirst().orElse(0.0), Matchers.greaterThan(5.0));
+                    .findFirst().orElse(0.0), Matchers.greaterThan(90.0));
             assertTrue(result.stream().anyMatch(sector -> sector.getSector().equals("Financial Services")));
             assertThat(result.stream()
                     .filter(sector -> sector.getSector().equals("Financial Services"))
                     .map(Sector::getSectorWeight)
-                    .findFirst().orElse(0.0), Matchers.greaterThan(10.0));
+                    .findFirst().orElse(0.0), Matchers.lessThan(10.0));
         });
 
         var sum = result.stream().map(Sector::getSectorWeight).mapToDouble(Double::doubleValue).sum();
         assertThat(sum, Matchers.greaterThan(99.0));
     }
 
-
-    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-        @Override
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-                    configurableApplicationContext, "spring.datasource.url=" + mySQLContainer.getJdbcUrl(),
-                    "spring.datasource.password=" + mySQLContainer.getPassword(),
-                    "spring.datasource.username=" + mySQLContainer.getUsername(),
-                    "spring.datasource.driver-class-name=" + mySQLContainer.getDriverClassName(),
-                    "spring.flyway.url=" + mySQLContainer.getJdbcUrl(),
-                    "spring.flyway.password=" + mySQLContainer.getPassword(),
-                    "spring.flyway.user=" + mySQLContainer.getUsername());
-        }
-    }
 }

@@ -83,14 +83,14 @@ class PortfolioControllerTest {
 
     @SneakyThrows
     @Test
-    @DisplayName("Feign exception test")
+    @DisplayName("Api exception test")
     void testFeignGetStocks() {
         when(portfolioService.getPortfolio(any())).thenThrow(new ApiRuntimeException("", "", new RuntimeException(), ""));
 
         mockMvc.perform(get("/portfolio")
                         .param("accountId", "123")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadGateway());
     }
 
     private PortfolioDto mockDto() {
