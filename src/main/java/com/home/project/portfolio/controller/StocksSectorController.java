@@ -4,7 +4,6 @@ import com.home.project.portfolio.model.portfolio.Sector;
 import com.home.project.portfolio.model.response.SectorsDto;
 import com.home.project.portfolio.service.PortfolioService;
 import com.home.project.portfolio.service.StockSectorService;
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.tinkoff.piapi.core.exception.ApiRuntimeException;
 
 import java.util.List;
 
@@ -39,11 +39,8 @@ public class StocksSectorController {
         try {
             var positions = portfolioService.getPositionsForAccount(accountId);
             sectors = stockSectorService.getSectorData(positions);
-        } catch (FeignException.Unauthorized e) {
-            log.warn("Retrieved unauthorized exception from Tinkoff. Token is absent or invalid");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (FeignException e) {
-            log.error("Failed to retrieve data from remote service, exception {}, status code {}", e.getMessage(), e.status());
+        } catch (ApiRuntimeException e) {
+            log.error("Failed to retrieve data from tinkoff, exception {}, status code {}", e.getMessage(), e.getCode());
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
         } catch (Exception e) {
             log.error("Failed to process sectors distribution, exception {}", e, e.getCause());

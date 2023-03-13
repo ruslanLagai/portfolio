@@ -1,0 +1,92 @@
+[
+  {
+    "figi": "BBG0019T5SG0",
+    "ticker": "TDOC",
+    "isin": "US87918A1051",
+    "instrumentType": "share",
+    "balance": 10.0,
+    "blocked": 0.0,
+    "lots": 1,
+    "name": "Teladoc Health Inc",
+    "averagePositionPrice": {
+      "currency": "usd",
+      "value": 9.0
+    },
+    "expectedYield": {
+      "currency": "usd",
+      "value": 1.0
+    }
+  },
+  {
+    "figi": "BBG004730N88",
+    "ticker": "SBER",
+    "isin": "RU0009029540",
+    "instrumentType": "share",
+    "balance": 50.0,
+    "blocked": 0.0,
+    "lots": 5,
+    "name": "Сбербанк",
+    "averagePositionPrice": {
+      "currency": "rub",
+      "value": 9.0
+    },
+    "expectedYield": {
+      "currency": "rub",
+      "value": 1.0
+    }
+  },
+  {
+    "figi": "BBG00T22WKV5",
+    "ticker": "SU29013RMFS8",
+    "isin": "RU000A101KT1",
+    "instrumentType": "Bond",
+    "balance": 5.0,
+    "blocked": 0.0,
+    "lots": 5,
+    "name": "ОФЗ 29013",
+    "averagePositionPrice": {
+      "currency": "rub",
+      "value": 9.0
+    },
+    "expectedYield": {
+      "currency": "rub",
+      "value": 1.0
+    }
+  },
+  {
+    "figi": "FUTYNDF06230",
+    "ticker": "YNM3",
+    "isin": "isin4",
+    "instrumentType": "future",
+    "balance": 10.0,
+    "blocked": 0.0,
+    "lots": 1,
+    "name": "YNDF-6.23 Яндекс",
+    "averagePositionPrice": {
+      "currency": "rub",
+      "value": 9.0
+    },
+    "expectedYield": {
+      "currency": "rub",
+      "value": 1.0
+    }
+  },
+  {
+    "figi": "BBG0013J7V24",
+    "ticker": "AMDRUB_TOM",
+    "isin": "isin5",
+    "instrumentType": "Currency",
+    "balance": 1,
+    "blocked": 0.0,
+    "lots": 10000,
+    "name": "Армянский драм",
+    "averagePositionPrice": {
+      "currency": "rub",
+      "value": 9.0
+    },
+    "expectedYield": {
+      "currency": "rub",
+      "value": 1.0
+    }
+  }
+]

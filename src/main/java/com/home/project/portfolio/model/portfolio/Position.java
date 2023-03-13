@@ -19,6 +19,5 @@ public class Position {
     private int lots;
     private String name;
     private AveragePositionItem averagePositionPrice;
-    private AveragePositionItem averagePositionPriceNoNkd;
     private AveragePositionItem expectedYield;
 }

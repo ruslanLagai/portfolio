@@ -11,9 +11,13 @@ import lombok.Data;
 public class Account {
     private AccountType brokerAccountType;
     private String brokerAccountId;
+    private String status;
+    private String name;
 
-    public static enum AccountType {
+    public enum AccountType {
         Tinkoff,
-        TinkoffIis
+        TinkoffIis,
+        Unspecified,
+        InvestBox
     }
 }

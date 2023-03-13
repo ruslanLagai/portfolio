@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.tinkoff.piapi.core.exception.ApiRuntimeException;
 
 @RestController
 @RequestMapping(value = "/portfolio", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -28,14 +29,11 @@ public class PortfolioController {
         PortfolioDto portfolio;
         try {
             portfolio = portfolioService.getPortfolio(accountId);
-        } catch (FeignException.Unauthorized e) {
-            log.warn("Retrieved unauthorized exception from Tinkoff. Token is absent or invalid");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (FeignException e) {
-            log.error("Failed to retrieve data from tinkoff, exception {}, status code {}", e.getMessage(), e.status());
+        } catch (ApiRuntimeException e) {
+            log.error("Failed to retrieve data from tinkoff, exception {}, status code {}", e.getMessage(), e.getCode());
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
         } catch (Exception e) {
-            log.error("Failed to process portfolio, exception {}", e.getCause());
+            log.error("Failed to process portfolio", e);
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.ok(portfolio);

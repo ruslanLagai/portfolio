@@ -1,7 +1,7 @@
 tinkoff:
   api:
     token: ${TINKOFF_API_TOKEN}
-    url: https://api-invest.tinkoff.ru/openapi
+    url: invest-public-api.tinkoff.ru:443
 server:
   servlet:
     context-path:

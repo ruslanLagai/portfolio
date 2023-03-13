@@ -9,6 +9,7 @@ import java.util.List;
  * Class to represent tinkoff portfolio for specific account
  */
 @Data
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Portfolio {
     private String trackingId;

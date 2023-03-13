@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.tinkoff.piapi.core.exception.ApiRuntimeException;
 
 @RestController
 @RequestMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -29,11 +30,8 @@ public class AccountController {
             var payload = new Accounts.Payload();
             payload.setAccounts(accounts);
             return ResponseEntity.ok(payload);
-        } catch (FeignException.Unauthorized e) {
-            log.warn("Retrieved unauthorized exception from Tinkoff. Token is absent or invalid");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (FeignException e) {
-            log.error("Failed to retrieve data from tinkoff, exception {}, status code {}", e.getMessage(), e.status());
+        } catch (ApiRuntimeException e) {
+            log.error("Failed to retrieve data from tinkoff, exception {}, status code {}", e.getMessage(), e.getCode());
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
         } catch (Exception e) {
             log.error("Failed to get accounts", e.getCause());

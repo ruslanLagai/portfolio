@@ -1,12 +1,12 @@
 package com.home.project.portfolio.processor;
 
-import com.home.project.portfolio.client.TinkoffClient;
-import com.home.project.portfolio.model.portfolio.Currencies;
+import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.response.PortfolioDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import ru.tinkoff.piapi.core.models.Positions;
 
-import java.util.stream.Stream;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Class to populate portfolioDto by assets distribution
@@ -15,31 +15,17 @@ import java.util.stream.Stream;
 @Log4j2
 public class CashProcessorImpl implements AccountProcessor {
 
-    private final TinkoffClient tinkoffClient;
-
-    public CashProcessorImpl(TinkoffClient tinkoffClient) {
-        this.tinkoffClient = tinkoffClient;
-    }
-
     @Override
-    public void apply(String accountId, PortfolioDto portfolioDto) {
-
+    public void apply(CompletableFuture<Positions> completableFuture, String accountId, PortfolioDto portfolioDto) {
         log.info("Getting currencies for accountId {}", accountId);
-        var currencies = tinkoffClient.getCurrencies(accountId);
-        if (!currencies.getStatus().equalsIgnoreCase("ok")) {
-            log.warn("Retrieved portfolio contains non ok status: {}", currencies.getStatus());
-            return;
-        }
-        if (currencies.getPayload() == null) {
-            log.warn("Retrieved null payload for portfolio, accountId {}", accountId);
-            return;
-        }
-        Stream.of(currencies)
-                .map(Currencies::getPayload)
-                .peek(c -> log.info("Retrieved {} currencies", currencies.getPayload().getCurrencies().size()))
-                .forEach(c -> c.getCurrencies()
-                        .forEach(currency -> portfolioDto.getCash().put(currency.getCurrency(), PortfolioDto.CurrencyDto.builder()
-                                .balance(currency.getBalance())
-                                .build())));
+        completableFuture.thenAccept(positions ->
+                positions.getMoney().stream()
+                    .peek(money -> log.info("Retrieved {} currencies", positions.getMoney().size()))
+                    .forEach(money -> portfolioDto.getCash().put(
+                        Currency.parse(money.getCurrency()),
+                        PortfolioDto.CurrencyDto.builder()
+                            .balance(money.getValue().doubleValue())
+                            .build()))
+        );
     }
 }

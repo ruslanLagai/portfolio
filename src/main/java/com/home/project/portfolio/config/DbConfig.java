@@ -24,28 +24,6 @@ import javax.sql.DataSource;
 @Configuration
 public class DbConfig {
 
-    @Value("${spring.datasource.url}")
-    private String url;
-
-    @Value("${spring.datasource.username}")
-    private String username;
-
-    @Value("${spring.datasource.password}")
-    private String password;
-
-    @Value("${spring.datasource.driver-class-name}")
-    private String driver;
-
-    @Bean
-    public DataSource dataSource() {
-        return DataSourceBuilder.create()
-                .url(url)
-                .password(password)
-                .username(username)
-                .driverClassName(driver)
-                .build();
-    }
-
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();

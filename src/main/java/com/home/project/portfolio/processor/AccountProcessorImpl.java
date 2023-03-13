@@ -1,12 +1,21 @@
 package com.home.project.portfolio.processor;
 
-import com.home.project.portfolio.client.TinkoffClient;
-import com.home.project.portfolio.model.portfolio.Account;
+import com.home.project.portfolio.mapper.PositionMapper;
+import com.home.project.portfolio.model.operations.Overbook;
 import com.home.project.portfolio.model.response.PortfolioDto;
+import com.home.project.portfolio.utils.PriceUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import ru.tinkoff.piapi.contract.v1.LastPrice;
+import ru.tinkoff.piapi.core.InstrumentsService;
+import ru.tinkoff.piapi.core.MarketDataService;
+import ru.tinkoff.piapi.core.OperationsService;
+import ru.tinkoff.piapi.core.models.Position;
+import ru.tinkoff.piapi.core.models.Positions;
+import ru.tinkoff.piapi.core.models.SecurityPosition;
 
-import java.util.stream.Stream;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * Class to populate portfolioDto by stocks
@@ -15,37 +24,51 @@ import java.util.stream.Stream;
 @Log4j2
 public class AccountProcessorImpl implements AccountProcessor {
 
-    private final TinkoffClient tinkoffClient;
+    private final OperationsService operationsService;
+    private final InstrumentsService instrumentsService;
+    private final PositionMapper positionMapper;
+    private final MarketDataService marketDataService;
 
-    public AccountProcessorImpl(TinkoffClient tinkoffClient) {
-        this.tinkoffClient = tinkoffClient;
+    public AccountProcessorImpl(OperationsService operationsService,
+                                InstrumentsService instrumentsService,
+                                PositionMapper positionMapper,
+                                MarketDataService marketDataService) {
+        this.operationsService = operationsService;
+        this.instrumentsService = instrumentsService;
+        this.positionMapper = positionMapper;
+        this.marketDataService = marketDataService;
     }
 
     @Override
-    public void apply(String accountId, PortfolioDto portfolioDto) {
-        log.info("Getting positions for accountId {}", accountId);
-        var portfolio = tinkoffClient.getPortfolioForAccount(accountId);
-        if (!portfolio.getStatus().equalsIgnoreCase("ok")) {
-            log.warn("Retrieved portfolio contains non ok status: {}", portfolio.getStatus());
-        }
-        if (portfolio.getPayload() == null) {
-            log.warn("Retrieved null payload for portfolio, accountId {}", accountId);
-        }
-        Stream.of(portfolio)
-                .filter(p -> p.getStatus().equalsIgnoreCase("ok"))
-                .filter(p -> p.getPayload() != null)
-                .peek(p -> {
-                    log.info("Retrieved {} positions", portfolio.getPayload().getPositions().size());
-                    portfolioDto.getPositions().addAll(portfolio.getPayload().getPositions());
-                })
-                .forEach(p -> p.getPayload().getPositions()
-                        .forEach(positions -> {
-                            log.info("Getting prices for instruments, figi {}", positions.getFigi());
-                            var overbook = tinkoffClient.getCurrentPrice(positions.getFigi(), 1);
-                            log.debug("Received overbook for {}, overbook {}", positions.getFigi(),
-                                    overbook.getPayload().toString());
-                            portfolioDto.getPrices().put(positions.getFigi(), overbook.getPayload());
-                        })
-                );
+    public void apply(CompletableFuture<Positions> positions, String accountId, PortfolioDto portfolioDto) {
+        positions.thenAccept(pos -> {
+                var shares = pos.getSecurities();
+                var portfolio = operationsService.getPortfolioSync(accountId);
+
+                var figis = shares.stream().map(SecurityPosition::getFigi).toList();
+                log.info("Getting prices for {} instruments", figis.size());
+                var lastPrices = marketDataService.getLastPricesSync(figis).stream()
+                    .collect(Collectors.toMap(LastPrice::getFigi, lastPrice -> {
+                        var price = PriceUtils.toDoubleValue(lastPrice.getPrice());
+                        var overbook = new Overbook();
+                        overbook.setLastPrice(price);
+                        overbook.setFigi(lastPrice.getFigi());
+                        return overbook;
+                    }));
+
+                shares.stream()
+                    .map(share -> {
+                        var instrument = instrumentsService.getInstrumentByFigiSync(share.getFigi());
+                        var position = portfolio.getPositions().stream()
+                            .filter(position1 -> position1.getFigi().equals(share.getFigi()))
+                            .findFirst()
+                            .orElse(Position.builder().build());
+                        lastPrices.get(share.getFigi()).setTradeStatus(instrument.getTradingStatus());
+                        return positionMapper.map(position, instrument, share.getBlocked());
+                    })
+                    .peek(position -> log.info("Mapped position {}", position))
+                    .forEach(position -> portfolioDto.getPositions().add(position));
+                portfolioDto.getPrices().putAll(lastPrices);
+        });
     }
 }
