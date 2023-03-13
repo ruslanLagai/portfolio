@@ -4,7 +4,7 @@
 # BUILD STAGE
 # ------------------------------------------------------------------------------
 
-FROM maven:3.8.4-openjdk-11 as build
+FROM maven:3.8.4-openjdk-17 as build
 
 ARG ARTIFACT_VERSION=0.1
 ARG MAVEN_OPTS
@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/root/.m2/ \
 # RUNTIME STAGE (deployment)
 # ------------------------------------------------------------------------------
 
-FROM openjdk:11.0.11-jre-slim
+FROM openjdk:17.0.1-jdk-slim
 
 ARG ARTIFACT_VERSION=1.0
 ENV app_name=portfolio
