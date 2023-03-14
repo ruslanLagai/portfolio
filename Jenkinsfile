@@ -27,8 +27,14 @@ pipeline {
             environment {
                 TINKOFF_API_TOKEN = credentials('TINKOFF_API_TOKEN')
             }
+            tools {
+                jdk "JDK-17"
+            }
             steps {
-                sh './mvnw clean package -DTINKOFF_API_TOKEN="$TINKOFF_API_TOKEN"'
+                sh '''
+                 export JAVA_HOME=/home/jenkins/tools/hudson.model.JDK/JDK-17/jdk-17.0.2
+                 ./mvnw clean package -DTINKOFF_API_TOKEN="$TINKOFF_API_TOKEN"
+                '''
             }
         }
 
