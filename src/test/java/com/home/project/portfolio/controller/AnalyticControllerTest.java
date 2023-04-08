@@ -5,7 +5,6 @@ import com.home.project.portfolio.model.analytic.AnalyticData;
 import com.home.project.portfolio.model.analytic.Payment;
 import com.home.project.portfolio.model.analytic.ServiceCommission;
 import com.home.project.portfolio.model.analytic.Taxes;
-import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.response.AnalyticDto;
 import com.home.project.portfolio.service.AnalyticService;
 import lombok.SneakyThrows;
@@ -21,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.tinkoff.piapi.contract.v1.OperationType;
 
 import java.util.List;
 
@@ -68,11 +68,11 @@ class AnalyticControllerTest {
                 .andExpect(jsonPath("$.serviceCommission[0].commission").value(Matchers.equalTo(10.0)))
                 .andExpect(jsonPath("$.taxes").exists())
                 .andExpect(jsonPath("$.taxes[0].currency").value(Matchers.equalTo("RUB")))
-                .andExpect(jsonPath("$.taxes[0].operationType").value(Matchers.equalTo("TAX")))
+                .andExpect(jsonPath("$.taxes[0].operationType").value(Matchers.equalTo("OPERATION_TYPE_TAX")))
                 .andExpect(jsonPath("$.payments").exists())
                 .andExpect(jsonPath("$.payments[0].payment").value(Matchers.equalTo(10.0)))
                 .andExpect(jsonPath("$.payments[0].currency").value(Matchers.equalTo("USD")))
-                .andExpect(jsonPath("$.payments[0].operationType").value(Matchers.equalTo("PAY_IN")));
+                .andExpect(jsonPath("$.payments[0].operationType").value(Matchers.equalTo("OPERATION_TYPE_INPUT")));
     }
 
     private AnalyticDto mockAnalyticDto() {
@@ -80,8 +80,8 @@ class AnalyticControllerTest {
         dto.setPayments(List.of(Payment.builder()
                 .payment(10.0)
                 .currency(Currency.USD)
-                .operationType(OperationType.PAY_IN).build()));
-        dto.setTaxes(List.of(Taxes.builder().taxes(10.0).currency(Currency.RUB).operationType(OperationType.TAX).build()));
+                .operationType(OperationType.OPERATION_TYPE_INPUT).build()));
+        dto.setTaxes(List.of(Taxes.builder().taxes(10.0).currency(Currency.RUB).operationType(OperationType.OPERATION_TYPE_TAX).build()));
         dto.setServiceCommission(List.of(ServiceCommission.builder().commission(10.0).currency(Currency.USD).build()));
         dto.setAnalyticData(List.of(AnalyticData.builder().ticker("t").revenue(10.0).commission(10.0).build()));
         return dto;

@@ -6,13 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.protobuf.util.JsonFormat;
 import com.home.project.portfolio.model.operations.Operations;
-import com.home.project.portfolio.model.portfolio.Portfolio;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.springframework.util.ResourceUtils;
 import ru.tinkoff.piapi.contract.v1.Account;
 import ru.tinkoff.piapi.contract.v1.GetLastPricesResponse;
 import ru.tinkoff.piapi.contract.v1.LastPrice;
+import ru.tinkoff.piapi.contract.v1.Operation;
+import ru.tinkoff.piapi.contract.v1.OperationsResponse;
 import ru.tinkoff.piapi.contract.v1.PortfolioResponse;
 import ru.tinkoff.piapi.contract.v1.PositionsResponse;
 import ru.tinkoff.piapi.core.models.Positions;
@@ -44,30 +45,6 @@ public class TestUtils {
         } catch (Exception e) {
             throw new RuntimeException("Failed to read operations file");
         }
-    }
-
-    public static Operations readOperations(String path) {
-        try {
-            return readValue(ResourceUtils.getFile(path).getAbsolutePath(), Operations.class);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to read operations file");
-        }
-    }
-
-    @SneakyThrows
-    public static Portfolio readPositions() {
-        String resourcePath = ResourceUtils.getFile("src/test/resources/testData/positions.json").getAbsolutePath();
-        try {
-            return readValue(resourcePath, Portfolio.class);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to read positions file");
-        }
-    }
-
-    @SneakyThrows
-    public static <T> T  getResource(String file, Class<T> clazz) {
-        var resource = ResourceUtils.getFile(file).getAbsolutePath();
-        return readValue(resource, clazz);
     }
 
     @SneakyThrows
@@ -106,5 +83,22 @@ public class TestUtils {
         var content = FileUtils.readFileToString(new File(ResourceUtils.getFile(path).getAbsolutePath()));
         JsonFormat.parser().merge(content, builder);
         return builder.build().getLastPricesList();
+    }
+
+    @SneakyThrows
+    public static Operation operation(String path) {
+        Operation.Builder builder = Operation.newBuilder();
+        var content = FileUtils.readFileToString(new File(ResourceUtils.getFile(path).getAbsolutePath()));
+        JsonFormat.parser().merge(content, builder);
+        return builder.build();
+    }
+
+
+    @SneakyThrows
+    public static List<Operation> operations(String path) {
+        OperationsResponse.Builder builder = OperationsResponse.newBuilder();
+        var content = FileUtils.readFileToString(new File(ResourceUtils.getFile(path).getAbsolutePath()));
+        JsonFormat.parser().merge(content, builder);
+        return builder.build().getOperationsList();
     }
 }

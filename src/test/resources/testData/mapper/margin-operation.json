@@ -1,0 +1,24 @@
+{
+  "id": "398070874",
+  "parentOperationId": "",
+  "currency": "rub",
+  "payment": {
+    "currency": "rub",
+    "units": "162",
+    "nano": 0
+  },
+  "price": {
+    "currency": "",
+    "units": "0",
+    "nano": 0
+  },
+  "state": "OPERATION_STATE_EXECUTED",
+  "quantity": "0",
+  "quantityRest": "0",
+  "figi": "",
+  "instrumentType": "",
+  "date": "2023-01-11T16:09:32.189Z",
+  "type": "Зачисление вариационной маржи",
+  "operationType": "OPERATION_TYPE_ACCRUING_VARMARGIN",
+  "trades": []
+}

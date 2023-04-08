@@ -2,9 +2,9 @@ package com.home.project.portfolio.model.entity;
 
 import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.InstrumentType;
-import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.operations.Status;
 import lombok.*;
+import ru.tinkoff.piapi.contract.v1.OperationType;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -40,5 +40,6 @@ public class OperationEntity {
     private InstrumentType instrumentType;
     private boolean isMarginCall;
     private ZonedDateTime date;
+    @Enumerated(value = EnumType.STRING)
     private OperationType operationType;
 }

@@ -19,9 +19,13 @@ public class Constants {
     public static final String PAY_IN_RUB = "payInRub";
     public static final String PAY_IN_USD = "payInUsd";
     public static final String PAY_IN_EUR = "payInEur";
+    public static final String PAY_IN_CNY = "payInCny";
+    public static final String PAY_IN_KHD = "payInKhd";
     public static final String PAY_OUT_USD = "payOutUsd";
     public static final String PAY_OUT_RUB = "payOutRub";
     public static final String PAY_OUT_EUR = "payOutEur";
+    public static final String PAY_OUT_CNY = "payOutCny";
+    public static final String PAY_OUT_KHD = "payOutKhd";
     public static final String TAX_RUB = "taxRub";
 
     public static final List<String> SPECIAL_TICKERS = Collections.unmodifiableList(Arrays.asList(

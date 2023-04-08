@@ -5,13 +5,13 @@ import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.analytic.AnalyticData;
 import com.home.project.portfolio.model.analytic.Taxes;
 import com.home.project.portfolio.model.operations.Operation;
-import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.operations.Status;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.utils.Constants;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import ru.tinkoff.piapi.contract.v1.OperationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,10 +46,11 @@ public class TaxProcessor implements AnalyticProcessor {
 
     private void calculate(List<Operation> ops, List<AnalyticData> analyticData) {
 
-        var taxBack = taxCalculator.calculate(extractOperations(ops, OperationType.TAX_BACK));
-        var taxDividend = taxCalculator.calculate(extractOperations(ops, OperationType.TAX_DIVIDEND));
-        var taxCoupon = taxCalculator.calculate(extractOperations(ops, OperationType.TAX_COUPON));
-        var taxPaid = taxCalculator.calculate(extractOperations(ops, OperationType.TAX));
+        var taxBack = taxCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_TAX_CORRECTION));
+        var taxDividend = taxCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_DIVIDEND_TAX));
+        var taxCoupon = taxCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_TAX_CORRECTION_COUPON));
+        var taxPaid = taxCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_TAX));
+        var boundTax = taxCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_BOND_TAX));
 
         if (taxBack == 0.0 && taxDividend == 0.0 && taxCoupon == 0.0 && taxPaid == 0.0) {
             return;
@@ -58,10 +59,11 @@ public class TaxProcessor implements AnalyticProcessor {
                 taxPaid, taxBack, taxDividend, taxCoupon);
 
         var taxes = Arrays.asList(
-                buildTax(taxBack, OperationType.TAX_BACK),
-                buildTax(taxPaid, OperationType.TAX),
-                buildTax(taxDividend, OperationType.TAX_DIVIDEND),
-                buildTax(taxCoupon, OperationType.TAX_COUPON)
+                buildTax(taxBack, OperationType.OPERATION_TYPE_TAX_CORRECTION),
+                buildTax(taxPaid, OperationType.OPERATION_TYPE_TAX),
+                buildTax(taxDividend, OperationType.OPERATION_TYPE_DIVIDEND_TAX),
+                buildTax(taxCoupon, OperationType.OPERATION_TYPE_TAX_CORRECTION_COUPON),
+                buildTax(boundTax, OperationType.OPERATION_TYPE_BOND_TAX)
         );
 
         analyticData.add(AnalyticData.builder()

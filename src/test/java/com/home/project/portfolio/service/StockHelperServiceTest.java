@@ -3,50 +3,56 @@ package com.home.project.portfolio.service;
 import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.InstrumentType;
 import com.home.project.portfolio.model.entity.StockMetadata;
-import com.home.project.portfolio.model.operations.Operation;
-import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.repository.StockRepository;
 import com.home.project.portfolio.utils.Constants;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.tinkoff.piapi.contract.v1.Instrument;
+import ru.tinkoff.piapi.contract.v1.MoneyValue;
+import ru.tinkoff.piapi.contract.v1.Operation;
+import ru.tinkoff.piapi.contract.v1.OperationType;
+import ru.tinkoff.piapi.contract.v1.SecurityTradingStatus;
+import ru.tinkoff.piapi.core.InstrumentsService;
 
-import static com.home.project.portfolio.utils.Profiles.CUSTOM_DB_TEST_PROFILE;
-import static com.home.project.portfolio.utils.Profiles.TEST_PROFILE;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * Class to test {@link StockHelperService}
  */
-@Disabled(value = "Integration test with a real service id")
-@ActiveProfiles(value = {CUSTOM_DB_TEST_PROFILE, TEST_PROFILE})
 @DisplayName("Test helper service")
 @Testcontainers
-@ContextConfiguration(classes = AbstractDbTest.Config.class)
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@ContextConfiguration(initializers = AbstractDbTest.Initializer.class)
 class StockHelperServiceTest extends AbstractDbTest {
 
-    static {
-        mySQLContainer.start();
-    }
+    @Autowired
+    private StockHelperService helperService;
 
     @Autowired
-    StockHelperService helperService;
+    private StockRepository stockRepository;
 
-    @Autowired
-    StockRepository stockRepository;
+    @MockBean
+    private InstrumentsService instrumentsService;
 
     @Test
     @DisplayName("test rest - stock")
     void findTicker() {
-        var result = helperService.findTicker(mockOperation("BBG004S681B4", OperationType.BUY, Currency.RUB));
+        when(instrumentsService.getInstrumentByFigiSync("BBG004S681B4")).thenReturn(Instrument.newBuilder()
+            .setFigi("BBG004S681B4")
+            .setTicker("NLMK")
+            .setIsin("RU0009046452")
+            .setName("НЛМК")
+            .setInstrumentType("share")
+            .setTradingStatus(SecurityTradingStatus.SECURITY_TRADING_STATUS_DEALER_NORMAL_TRADING)
+            .build());
+        var result = helperService.findTicker(mockOperation("BBG004S681B4", OperationType.OPERATION_TYPE_BUY, Currency.RUB));
         var saved = stockRepository.getByFigi("BBG004S681B4");
         assertEquals("NLMK", result);
         assertAll(() -> {
@@ -62,14 +68,14 @@ class StockHelperServiceTest extends AbstractDbTest {
     @Test
     @DisplayName("test - USD service commission")
     void findTickerTest() {
-        var result = helperService.findTicker(mockOperation(null, OperationType.SERVICE_COMMISSION, Currency.USD));
+        var result = helperService.findTicker(mockOperation("", OperationType.OPERATION_TYPE_BROKER_FEE, Currency.USD));
         assertEquals(Constants.SERVICE_COMMISSION_USD, result);
     }
 
     @Test
     @DisplayName("test - RUB service commission")
     void findTickerTestRub() {
-        var result = helperService.findTicker(mockOperation(null, OperationType.SERVICE_COMMISSION, Currency.RUB));
+        var result = helperService.findTicker(mockOperation("", OperationType.OPERATION_TYPE_SERVICE_FEE, Currency.RUB));
         assertEquals(Constants.SERVICE_COMMISSION_RUB, result);
     }
 
@@ -78,7 +84,7 @@ class StockHelperServiceTest extends AbstractDbTest {
     void findTickerDb() {
         var saved = stockRepository.save(mockMetadata());
 
-        var result = helperService.findTicker(mockOperation("BBG000B9XRY4", OperationType.BUY, Currency.USD));
+        var result = helperService.findTicker(mockOperation("BBG000B9XRY4", OperationType.OPERATION_TYPE_BUY, Currency.USD));
         assertEquals("AAPL", result);
 
         stockRepository.deleteById(saved.getId());
@@ -93,12 +99,12 @@ class StockHelperServiceTest extends AbstractDbTest {
     }
 
     private Operation mockOperation(String figi, OperationType operationType, Currency currency) {
-        var operation = new Operation();
+        var operation = Operation.newBuilder();
         operation.setOperationType(operationType);
-        operation.setPayment((-100.0));
+        operation.setPayment(MoneyValue.newBuilder().setUnits(-100).setNano(0).build());
         operation.setQuantity(1);
-        operation.setCurrency(currency);
+        operation.setCurrency(currency.getCode());
         operation.setFigi(figi);
-        return operation;
+        return operation.build();
     }
 }

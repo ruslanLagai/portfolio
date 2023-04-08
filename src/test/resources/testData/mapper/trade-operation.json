@@ -1,0 +1,35 @@
+{
+  "id": "2022426539781660682",
+  "parentOperationId": "",
+  "currency": "rub",
+  "payment": {
+    "currency": "rub",
+    "units": "30876",
+    "nano": 0
+  },
+  "price": {
+    "currency": "pt.",
+    "units": "10",
+    "nano": 292000000
+  },
+  "state": "OPERATION_STATE_EXECUTED",
+  "quantity": "3",
+  "quantityRest": "0",
+  "figi": "FUTCNY032300",
+  "instrumentType": "futures",
+  "date": "2023-01-11T08:15:05.215Z",
+  "type": "Продажа ценных бумаг",
+  "operationType": "OPERATION_TYPE_SELL",
+  "trades": [
+    {
+      "tradeId": "2022426539781542581",
+      "dateTime": "2023-01-11T08:15:05.215Z",
+      "quantity": "3",
+      "price": {
+        "currency": "rub",
+        "units": "10",
+        "nano": 292000000
+      }
+    }
+  ]
+}

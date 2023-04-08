@@ -1,21 +1,20 @@
 package com.home.project.portfolio.service;
 
-import com.home.project.portfolio.client.TinkoffClient;
 import com.home.project.portfolio.model.Currency;
+import com.home.project.portfolio.model.InstrumentType;
 import com.home.project.portfolio.model.entity.StockMetadata;
-import com.home.project.portfolio.model.operations.Instrument;
-import com.home.project.portfolio.model.operations.Operation;
-import com.home.project.portfolio.model.operations.OperationType;
-import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.repository.StockRepository;
 import com.home.project.portfolio.utils.Constants;
 import com.home.project.portfolio.utils.ExecutorServiceUtils;
-import feign.FeignException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import ru.tinkoff.piapi.contract.v1.Instrument;
+import ru.tinkoff.piapi.contract.v1.Operation;
+import ru.tinkoff.piapi.contract.v1.OperationType;
+import ru.tinkoff.piapi.core.InstrumentsService;
+import ru.tinkoff.piapi.core.exception.ApiRuntimeException;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -26,61 +25,68 @@ import java.util.function.Function;
  */
 @Service
 @Log4j2
-public class StockHelperService {
+public record StockHelperService(InstrumentsService instrumentsService,
+                                 StockRepository stockRepository) {
 
     private static final Function<Operation, String> PAYMENT_IN_PROC = operation ->
-            operation.getCurrency().equals(Currency.USD) ? Constants.PAY_IN_USD
-                    : operation.getCurrency().equals(Currency.RUB) ? Constants.PAY_IN_RUB
-                    : operation.getCurrency().equals(Currency.EUR) ? Constants.PAY_IN_EUR : null;
+        Currency.parse(operation.getCurrency()).equals(Currency.USD) ? Constants.PAY_IN_USD
+            : Currency.parse(operation.getCurrency()).equals(Currency.RUB) ? Constants.PAY_IN_RUB
+            : Currency.parse(operation.getCurrency()).equals(Currency.EUR) ? Constants.PAY_IN_EUR
+            : Currency.parse(operation.getCurrency()).equals(Currency.CNY) ? Constants.PAY_IN_CNY
+            : Currency.parse(operation.getCurrency()).equals(Currency.HKD) ? Constants.PAY_IN_KHD : null;
     private static final Function<Operation, String> PAYMENT_OUT_PROC = operation ->
-            operation.getCurrency().equals(Currency.USD) ? Constants.PAY_OUT_USD
-                    : operation.getCurrency().equals(Currency.RUB) ? Constants.PAY_OUT_RUB
-                    : operation.getCurrency().equals(Currency.EUR) ? Constants.PAY_OUT_EUR : null;
+        Currency.parse(operation.getCurrency()).equals(Currency.USD) ? Constants.PAY_OUT_USD
+            : Currency.parse(operation.getCurrency()).equals(Currency.RUB) ? Constants.PAY_OUT_RUB
+            : Currency.parse(operation.getCurrency()).equals(Currency.EUR) ? Constants.PAY_OUT_EUR
+            : Currency.parse(operation.getCurrency()).equals(Currency.CNY) ? Constants.PAY_OUT_CNY
+            : Currency.parse(operation.getCurrency()).equals(Currency.HKD) ? Constants.PAY_OUT_KHD : null;
     private static final Function<Operation, String> TAX_PROC = operation -> Constants.TAX_RUB;
     private static final Function<Operation, String> SERVICE_COMMISSION_PROC = operation ->
-            operation.getCurrency().equals(Currency.RUB) ? Constants.SERVICE_COMMISSION_RUB
-                    : operation.getCurrency().equals(Currency.USD) ? Constants.SERVICE_COMMISSION_USD
-                    : null;
+        Currency.parse(operation.getCurrency()).equals(Currency.RUB) ? Constants.SERVICE_COMMISSION_RUB
+            : Currency.parse(operation.getCurrency()).equals(Currency.USD) ? Constants.SERVICE_COMMISSION_USD
+            : null;
 
-    private static final Map<OperationType, Function<Operation, String>> SPECIAL_TICKERS = Map.of(
-            OperationType.PAY_IN, PAYMENT_IN_PROC,
-            OperationType.PAY_OUT, PAYMENT_OUT_PROC,
-            OperationType.TAX, TAX_PROC,
-            OperationType.TAX_BACK, TAX_PROC,
-            OperationType.TAX_DIVIDEND, TAX_PROC,
-            OperationType.TAX_COUPON, TAX_PROC,
-            OperationType.SERVICE_COMMISSION, SERVICE_COMMISSION_PROC,
-            OperationType.MARGIN_COMMISSION, SERVICE_COMMISSION_PROC,
-            OperationType.OTHER_COMMISSION, SERVICE_COMMISSION_PROC,
-            OperationType.EXCHANGE_COMMISSION, SERVICE_COMMISSION_PROC
+    private static final Map<OperationType, Function<Operation, String>> SPECIAL_TICKERS = Map.ofEntries(
+        Map.entry(OperationType.OPERATION_TYPE_INPUT, PAYMENT_IN_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_INPUT_SWIFT, PAYMENT_IN_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_OUTPUT_SWIFT, PAYMENT_IN_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_OUTPUT, PAYMENT_OUT_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_TAX, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_TAX_CORRECTION, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_BENEFIT_TAX, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_TAX_CORRECTION_COUPON, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_BOND_TAX_PROGRESSIVE, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_TAX_CORRECTION_PROGRESSIVE, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_TAX_PROGRESSIVE, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_TAX_REPO, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_TAX_REPO_HOLD, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_TAX_REPO_REFUND, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_TAX_REPO_REFUND_PROGRESSIVE, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_DIVIDEND_TAX_PROGRESSIVE, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_BENEFIT_TAX_PROGRESSIVE, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_DIVIDEND_TAX, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_BOND_TAX, TAX_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_BROKER_FEE, SERVICE_COMMISSION_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_SERVICE_FEE, SERVICE_COMMISSION_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_MARGIN_FEE, SERVICE_COMMISSION_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_CASH_FEE, SERVICE_COMMISSION_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_OUT_FEE, SERVICE_COMMISSION_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_SUCCESS_FEE, SERVICE_COMMISSION_PROC),
+        Map.entry(OperationType.OPERATION_TYPE_ADVICE_FEE, SERVICE_COMMISSION_PROC)
     );
-
-    private final TinkoffClient tinkoffClient;
-    private final StockRepository stockRepository;
-
-    public StockHelperService(TinkoffClient tinkoffClient,
-                              StockRepository stockRepository) {
-        this.tinkoffClient = tinkoffClient;
-        this.stockRepository = stockRepository;
-    }
 
     public String findTicker(Operation operation) {
         return getTickerFromDb(operation)
-                .orElseGet(() -> getTickerFromTinkoff(operation));
-    }
-
-    public List<Position> getPortfolio(String accountId) {
-
-        return null;
+            .orElseGet(() -> getTickerFromTinkoff(operation));
     }
 
     private Optional<String> getTickerFromDb(Operation operation) {
         Optional<String> ticker;
-        if (operation.getFigi() == null) {
+        if (!StringUtils.hasText(operation.getFigi())) {
             ticker = Optional.ofNullable(getSpecialTicker(operation));
         } else {
             ticker = Optional.ofNullable(stockRepository.getByFigi(operation.getFigi()))
-                    .map(StockMetadata::getTicker);
+                .map(StockMetadata::getTicker);
         }
         return ticker;
     }
@@ -90,22 +96,25 @@ public class StockHelperService {
         if (StringUtils.hasText(operation.getFigi())) {
 
             try {
-                var response = Optional.ofNullable(
-                        tinkoffClient.getInstrumentInfoByFigi(operation.getFigi())
-                                .getPayload());
-                response.ifPresent(payload ->
+                var response = Optional.of(instrumentsService.getInstrumentByFigiSync(operation.getFigi()));
+                response.ifPresent(instrument -> {
+                    if (!stockRepository.existsByTicker(instrument.getTicker())) {
                         ExecutorServiceUtils.execute(() ->
-                                        stockRepository.save(StockMetadata.builder()
-                                                .ticker(payload.getTicker())
-                                                .figi(payload.getFigi())
-                                                .instrumentType(payload.getType())
-                                                .isin(payload.getIsin())
-                                                .name(payload.getName())
-                                                .build()),
-                                Executors.newSingleThreadExecutor()));
-                ticker = response.map(Instrument.Payload::getTicker).orElse(null);
-            } catch (FeignException e) {
-                log.error("Failed to get stock metadata, figi {}. Exception {}", operation.getFigi(), e.getMessage());
+                                stockRepository.save(StockMetadata.builder()
+                                    .ticker(instrument.getTicker())
+                                    .figi(instrument.getFigi())
+                                    .instrumentType(InstrumentType.parse(instrument.getInstrumentType()))
+                                    .isin(instrument.getIsin())
+                                    .name(instrument.getName())
+                                    .build()),
+                            Executors.newSingleThreadExecutor());
+                    }
+                });
+                ticker = response.map(Instrument::getTicker).orElse(null);
+            } catch (ApiRuntimeException e) {
+                log.error("Failed to get stock metadata, figi {}", operation.getFigi(), e);
+            } catch (NullPointerException e) {
+                log.error("Figi {}", operation.getFigi());
             }
 
         }

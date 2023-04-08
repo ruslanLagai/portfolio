@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class Operation {
     private InstrumentType instrumentType;
     private boolean isMarginCall;
     private ZonedDateTime date;
-    private OperationType operationType;
+    private ru.tinkoff.piapi.contract.v1.OperationType operationType;
     private List<Trade> trades;
     private Commission commission;
 }

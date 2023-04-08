@@ -5,12 +5,12 @@ import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.analytic.AnalyticData;
 import com.home.project.portfolio.model.analytic.Payment;
 import com.home.project.portfolio.model.operations.Operation;
-import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.utils.OperationGroups;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import ru.tinkoff.piapi.contract.v1.OperationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,23 +47,23 @@ public class PaymentProcessor implements AnalyticProcessor {
 
     private AnalyticData calculate(List<Operation> ops) {
 
-        var payInUsd = paymentCalculator.calculate(extractOperations(ops, OperationType.PAY_IN, Currency.USD));
-        var payInRub = paymentCalculator.calculate(extractOperations(ops, OperationType.PAY_IN, Currency.RUB));
-        var payInEur = paymentCalculator.calculate(extractOperations(ops, OperationType.PAY_IN, Currency.EUR));
+        var payInUsd = paymentCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_INPUT, Currency.USD));
+        var payInRub = paymentCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_INPUT, Currency.RUB));
+        var payInEur = paymentCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_INPUT, Currency.EUR));
         log.info("Pay in: usd {}, rub {}, eur {}", payInUsd, payInRub, payInEur);
 
-        var payOutUsd = paymentCalculator.calculate(extractOperations(ops, OperationType.PAY_OUT, Currency.USD));
-        var payOutRub = paymentCalculator.calculate(extractOperations(ops, OperationType.PAY_OUT, Currency.RUB));
-        var payOutEur = paymentCalculator.calculate(extractOperations(ops, OperationType.PAY_OUT, Currency.EUR));
+        var payOutUsd = paymentCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_OUTPUT, Currency.USD));
+        var payOutRub = paymentCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_OUTPUT, Currency.RUB));
+        var payOutEur = paymentCalculator.calculate(extractOperations(ops, OperationType.OPERATION_TYPE_OUTPUT, Currency.EUR));
         log.info("Computed pay out: usd {}, rub {}, eur {}", payOutUsd, payOutRub, payOutEur);
 
         var payments = Arrays.asList(
-                buildPayment(payInUsd, OperationType.PAY_IN, Currency.USD),
-                buildPayment(payInRub, OperationType.PAY_IN, Currency.RUB),
-                buildPayment(payInEur, OperationType.PAY_IN, Currency.EUR),
-                buildPayment(payOutUsd, OperationType.PAY_OUT, Currency.USD),
-                buildPayment(payOutRub, OperationType.PAY_OUT, Currency.RUB),
-                buildPayment(payOutEur, OperationType.PAY_OUT, Currency.EUR)
+                buildPayment(payInUsd, OperationType.OPERATION_TYPE_INPUT, Currency.USD),
+                buildPayment(payInRub, OperationType.OPERATION_TYPE_INPUT, Currency.RUB),
+                buildPayment(payInEur, OperationType.OPERATION_TYPE_INPUT, Currency.EUR),
+                buildPayment(payOutUsd, OperationType.OPERATION_TYPE_OUTPUT, Currency.USD),
+                buildPayment(payOutRub, OperationType.OPERATION_TYPE_OUTPUT, Currency.RUB),
+                buildPayment(payOutEur, OperationType.OPERATION_TYPE_OUTPUT, Currency.EUR)
         );
         return AnalyticData.builder()
                 .payment(payments)
