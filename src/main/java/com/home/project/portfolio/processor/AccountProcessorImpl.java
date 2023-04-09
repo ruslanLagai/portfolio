@@ -1,5 +1,6 @@
 package com.home.project.portfolio.processor;
 
+import com.home.project.portfolio.PortfolioAspect;
 import com.home.project.portfolio.mapper.PositionMapper;
 import com.home.project.portfolio.model.operations.Overbook;
 import com.home.project.portfolio.model.response.PortfolioDto;
@@ -28,15 +29,18 @@ public class AccountProcessorImpl implements AccountProcessor {
     private final InstrumentsService instrumentsService;
     private final PositionMapper positionMapper;
     private final MarketDataService marketDataService;
+    private final PortfolioAspect portfolioAspect;
 
     public AccountProcessorImpl(OperationsService operationsService,
                                 InstrumentsService instrumentsService,
                                 PositionMapper positionMapper,
-                                MarketDataService marketDataService) {
+                                MarketDataService marketDataService,
+                                PortfolioAspect portfolioAspect) {
         this.operationsService = operationsService;
         this.instrumentsService = instrumentsService;
         this.positionMapper = positionMapper;
         this.marketDataService = marketDataService;
+        this.portfolioAspect = portfolioAspect;
     }
 
     @Override
@@ -69,6 +73,7 @@ public class AccountProcessorImpl implements AccountProcessor {
                     .peek(position -> log.info("Mapped position {}", position))
                     .forEach(position -> portfolioDto.getPositions().add(position));
                 portfolioDto.getPrices().putAll(lastPrices);
+                portfolioAspect.getSemaphore().release();
         });
     }
 }
