@@ -1,11 +1,10 @@
 package com.home.project.portfolio.model.response;
 
 import com.home.project.portfolio.model.operations.Operation;
-import com.home.project.portfolio.model.operations.OperationType;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import ru.tinkoff.piapi.contract.v1.OperationType;
 
 import java.util.Comparator;
 import java.util.List;

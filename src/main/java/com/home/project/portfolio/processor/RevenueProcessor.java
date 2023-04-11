@@ -4,11 +4,11 @@ import com.home.project.portfolio.calculation.Calculator;
 import com.home.project.portfolio.model.InstrumentType;
 import com.home.project.portfolio.model.analytic.AnalyticData;
 import com.home.project.portfolio.model.operations.Operation;
-import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.operations.Status;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.service.OperationsService;
 import com.home.project.portfolio.utils.Constants;
+import com.home.project.portfolio.utils.OperationGroups;
 import com.home.project.portfolio.utils.OperationUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.math3.util.Precision;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.testcontainers.shaded.com.google.common.util.concurrent.AtomicDouble;
+import ru.tinkoff.piapi.contract.v1.OperationType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -63,17 +64,20 @@ public class RevenueProcessor implements AnalyticProcessor {
             }
 
             var dividends = new AtomicDouble();
+            var coupons = new AtomicDouble();
+
             var tradingOperations = ops.stream()
                     .filter(operation -> !Constants.SPECIAL_TICKERS.contains(operation.getTicker()))
                     .filter(operation -> operation.getFigi() != null)
                     .peek(operation -> {
-                        if (operation.getOperationType().equals(OperationType.DIVIDEND)) {
+                        if (operation.getOperationType().equals(OperationType.OPERATION_TYPE_DIVIDEND)) {
                             dividends.addAndGet(operation.getPayment());
                         }
+                        if (operation.getOperationType().equals(OperationType.OPERATION_TYPE_COUPON)) {
+                            coupons.addAndGet(operation.getPayment());
+                        }
                     })
-                    .filter(operation -> operation.getOperationType().equals(OperationType.SELL)
-                            || operation.getOperationType().equals(OperationType.BUY)
-                            || operation.getOperationType().equals(OperationType.BUY_CARD))
+                    .filter(operation -> OperationGroups.TRADING_OPERATIONS.contains(operation.getOperationType()))
                     .collect(Collectors.toList());
 
             // add operations if stock was bought/sold before requested period
@@ -81,13 +85,12 @@ public class RevenueProcessor implements AnalyticProcessor {
 
             var revenue = revenueCalculator.calculate(tradingOperations);
             var totalBoughtSum = tradingOperations.stream()
-                    .filter(o -> o.getOperationType().equals(OperationType.BUY) ||
-                            o.getOperationType().equals(OperationType.BUY_CARD))
+                    .filter(o -> OperationGroups.BUY_OPERATIONS.contains(o.getOperationType()))
                     .map(o -> Math.abs(o.getPayment()))
                     .mapToDouble(Double::doubleValue)
                     .sum();
             var totalSoldSum = tradingOperations.stream()
-                    .filter(o -> o.getOperationType().equals(OperationType.SELL))
+                    .filter(o -> OperationGroups.SELL_OPERATIONS.contains(o.getOperationType()))
                     .map(o -> Math.abs(o.getPayment()))
                     .mapToDouble(Double::doubleValue)
                     .sum();
@@ -98,6 +101,7 @@ public class RevenueProcessor implements AnalyticProcessor {
                     .figi(operation.getFigi())
                     .revenue(revenue)
                     .dividend(Precision.round(dividends.get(), 2))
+                    .coupons(Precision.round(coupons.get(), 2))
                     .totalSoldSum(Precision.round(totalSoldSum, 2))
                     .totalBoughtSum(Precision.round(totalBoughtSum, 2))
                     .revenuePercentage(totalBoughtSum != 0.0 ?
@@ -121,13 +125,12 @@ public class RevenueProcessor implements AnalyticProcessor {
             return;
         }
         var boughtOperationsNum = operations.stream()
-                .filter(operation -> operation.getOperationType().equals(OperationType.BUY)
-                        || operation.getOperationType().equals(OperationType.BUY_CARD))
+                .filter(operation -> OperationGroups.BUY_OPERATIONS.contains(operation.getOperationType()))
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
                 .map(Operation::getQuantityExecuted)
                 .reduce(0, Integer::sum);
         var soldOperationsNum = operations.stream()
-                .filter(operation -> operation.getOperationType().equals(OperationType.SELL))
+                .filter(operation -> OperationGroups.SELL_OPERATIONS.contains(operation.getOperationType()))
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
                 .map(Operation::getQuantityExecuted)
                 .reduce(0, Integer::sum);
@@ -151,7 +154,7 @@ public class RevenueProcessor implements AnalyticProcessor {
                                 operationsService.getLastOperationsForStock(operation.getDate().minus(period),
                                                 operation.getDate().minusSeconds(30), operation.getFigi(), accountId)
                                         .stream()
-                                        .filter(op -> op.getOperationType().equals(OperationType.SELL))
+                                        .filter(op -> OperationGroups.SELL_OPERATIONS.contains(op.getOperationType()))
                                         .filter(op -> op.getStatus().equals(Status.DONE))
                                         .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                                         .takeWhile(op -> index.get() < Math.abs(difference))
@@ -160,8 +163,7 @@ public class RevenueProcessor implements AnalyticProcessor {
                                 operationsService.getLastOperationsForStock(operation.getDate().minus(period),
                                                 operation.getDate().minusSeconds(30), operation.getFigi(), accountId)
                                         .stream()
-                                        .filter(op -> op.getOperationType().equals(OperationType.BUY) ||
-                                                op.getOperationType().equals(OperationType.BUY_CARD))
+                                        .filter(op -> OperationGroups.BUY_OPERATIONS.contains(op.getOperationType()))
                                         .filter(op -> op.getStatus().equals(Status.DONE))
                                         .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                                         .takeWhile(op -> index.get() < Math.abs(difference))

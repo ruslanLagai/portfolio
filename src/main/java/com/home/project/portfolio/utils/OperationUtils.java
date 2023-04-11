@@ -1,7 +1,6 @@
 package com.home.project.portfolio.utils;
 
 import com.home.project.portfolio.model.operations.Operation;
-import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.operations.Status;
 import org.springframework.util.CollectionUtils;
 
@@ -17,8 +16,7 @@ public class OperationUtils {
     public static List<Operation> sortBuyOperations(List<Operation> operations) {
         return operations.stream()
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
-                .filter(operation -> operation.getOperationType().equals(OperationType.BUY)
-                        || operation.getOperationType().equals(OperationType.BUY_CARD))
+                .filter(operation -> OperationGroups.BUY_OPERATIONS.contains(operation.getOperationType()))
                 .sorted(Comparator.comparing(Operation::getDate, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }

@@ -7,6 +7,7 @@ import com.home.project.portfolio.model.entity.CompanyEntity;
 import com.home.project.portfolio.model.portfolio.Position;
 import com.home.project.portfolio.model.portfolio.Sector;
 import com.home.project.portfolio.repository.CompanyRepository;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Precision;
 import org.springframework.stereotype.Service;
@@ -68,9 +69,10 @@ public class StockSectorService {
     }
 
     private Double calculateAsset(Position position, Map<Currency, Double> currencyPrices) {
-        var sum = position.getAveragePositionPrice().value() + position.getExpectedYield().value();
+        var price = position.getAveragePositionPrice().value() + position.getExpectedYield().value() / position.getBalance();
         double currency = currencyPrices.getOrDefault(position.getAveragePositionPrice().currency(), 1.0);
-        return sum * currency;
+        log.debug("Current price for {} is {}. currency multiplier {}", position.getTicker(), price, currency);
+        return price * currency * position.getBalance();
     }
 
 
@@ -82,11 +84,13 @@ public class StockSectorService {
                 .forEach(position -> companyRepository.findByTicker(position.getTicker())
                         .ifPresentOrElse(
                                 companyEntity -> tickerBySector.add(companyEntity.getSector(), position),
-                                () -> Optional.of(yahooFinanceClient.getCompanyOverview(position.getTicker()))
-                                        .ifPresentOrElse(response -> {
-                                                var overview = response.getQuoteSummary().getResult().iterator().next();
-                                                tickerBySector.add(overview.getAssetProfile().getSector(), position);
-                                                companyRepository.save(CompanyEntity.builder()
+                                () -> {
+                                    try {
+                                        Optional.of(yahooFinanceClient.getCompanyOverview(position.getTicker()))
+                                            .ifPresentOrElse(response -> {
+                                                    var overview = response.getQuoteSummary().getResult().iterator().next();
+                                                    tickerBySector.add(overview.getAssetProfile().getSector(), position);
+                                                    companyRepository.save(CompanyEntity.builder()
                                                         .country(overview.getAssetProfile().getCountry())
                                                         .industry(overview.getAssetProfile().getIndustry())
                                                         .name(position.getName())
@@ -95,7 +99,11 @@ public class StockSectorService {
                                                         .ticker(position.getTicker())
                                                         .build());
                                                 },
-                                                () -> log.error("Failed to retrieve company overview from yahoo for {}", position.getTicker()))
+                                                () -> log.error("Failed to retrieve company overview from yahoo for {}", position.getTicker()));
+                                    } catch (FeignException e) {
+                                        log.warn("Error from yahoo service, error {}", e.getMessage(), e);
+                                    }
+                                }
                         )
                 );
         return tickerBySector;

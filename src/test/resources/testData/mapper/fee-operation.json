@@ -1,0 +1,24 @@
+{
+  "id": "3673707041",
+  "parentOperationId": "2022426539781660682",
+  "currency": "rub",
+  "payment": {
+    "currency": "rub",
+    "units": "-7",
+    "nano": -720000000
+  },
+  "price": {
+    "currency": "",
+    "units": "0",
+    "nano": 0
+  },
+  "state": "OPERATION_STATE_EXECUTED",
+  "quantity": "0",
+  "quantityRest": "0",
+  "figi": "FUTCNY032300",
+  "instrumentType": "futures",
+  "date": "2023-01-11T08:15:06.215Z",
+  "type": "Удержание комиссии за операцию",
+  "operationType": "OPERATION_TYPE_BROKER_FEE",
+  "trades": []
+}

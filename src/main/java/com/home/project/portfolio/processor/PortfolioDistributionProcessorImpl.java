@@ -64,11 +64,14 @@ public class PortfolioDistributionProcessorImpl implements AccountProcessor {
                             * currencyPrices.getOrDefault(currencyByFigi.get(overbook.getFigi()), 1.0);
                     sum.addAndGet(result);
                 });
-        sum.addAndGet(portfolioDto.getCash().get(Currency.RUB).getBalance());
+        if (portfolioDto.getCash().get(Currency.RUB) != null) {
+            sum.addAndGet(portfolioDto.getCash().get(Currency.RUB).getBalance());
+        }
 
         var distribution = Distribution.builder()
                 .assetsInRub(Precision.round(sum.get(), 2))
-                .assetsInUsd(Precision.round(sum.get() / currencyPrices.get(Currency.USD), 2))
+                .assetsInUsd(currencyPrices.get(Currency.USD) != null
+                    ? Precision.round(sum.get() / currencyPrices.get(Currency.USD), 2) : 0)
                 .totalInCash(calculateTotalInCash(portfolioDto, currencyPrices))
                 .totalInStocks(calculateTotalInType(portfolioDto, currencyPrices, InstrumentType.STOCK))
                 .totalInBounds(calculateTotalInType(portfolioDto, currencyPrices, InstrumentType.BOND))

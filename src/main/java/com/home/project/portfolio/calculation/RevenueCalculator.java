@@ -1,7 +1,6 @@
 package com.home.project.portfolio.calculation;
 
 import com.home.project.portfolio.model.operations.Operation;
-import com.home.project.portfolio.model.operations.OperationType;
 import com.home.project.portfolio.model.operations.Status;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.math3.util.Precision;
@@ -9,6 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+
+import static com.home.project.portfolio.utils.OperationGroups.BUY_OPERATIONS;
+import static com.home.project.portfolio.utils.OperationGroups.SELL_OPERATIONS;
 
 /**
  * Class to calculate revenue for stock
@@ -28,13 +30,12 @@ public class RevenueCalculator implements Calculator {
             return 0.0;
         }
         var bought = operations.stream()
-                .filter(operation -> operation.getOperationType().equals(OperationType.BUY)
-                        || operation.getOperationType().equals(OperationType.BUY_CARD))
+                .filter(operation -> BUY_OPERATIONS.contains(operation.getOperationType()))
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
                 .map(operation -> Math.abs(operation.getPayment()))
                 .reduce(0.0, Double::sum);
         var sold = operations.stream()
-                .filter(operation -> operation.getOperationType().equals(OperationType.SELL))
+                .filter(operation -> SELL_OPERATIONS.contains(operation.getOperationType()))
                 .filter(operation -> operation.getStatus().equals(Status.DONE))
                 .map(operation -> Math.abs(operation.getPayment()))
                 .reduce(0.0, Double::sum);

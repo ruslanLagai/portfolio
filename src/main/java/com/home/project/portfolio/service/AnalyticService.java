@@ -23,19 +23,9 @@ import java.util.List;
  */
 @Service
 @Log4j2
-public class AnalyticService {
-
-    private final List<AnalyticProcessor> processors;
-    private final OperationsService operationsService;
-    private final PortfolioService portfolioService;
-
-    public AnalyticService(List<AnalyticProcessor> processors,
-                           OperationsService operationsService,
-                           PortfolioService portfolioService) {
-        this.processors = processors;
-        this.operationsService = operationsService;
-        this.portfolioService = portfolioService;
-    }
+public record AnalyticService(List<AnalyticProcessor> processors,
+                              OperationsService operationsService,
+                              PortfolioService portfolioService) {
 
     public AnalyticDto analyzeAccount(String accountId, Period period) {
         List<AnalyticData> analyticDataList = new ArrayList<>();

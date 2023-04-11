@@ -13,6 +13,7 @@ public enum Currency {
     USD("usd"),
     EUR("eur"),
     HKD("hkd"),
+    CNY("cny"),
     UNKNOWN("unknown");
 
     private final String code;
