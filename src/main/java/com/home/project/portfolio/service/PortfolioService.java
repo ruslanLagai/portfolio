@@ -8,6 +8,7 @@ import com.home.project.portfolio.model.response.PortfolioDto;
 import com.home.project.portfolio.processor.AccountProcessor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import ru.tinkoff.piapi.contract.v1.AccountStatus;
 import ru.tinkoff.piapi.contract.v1.PositionsResponse;
 import ru.tinkoff.piapi.core.InstrumentsService;
 import ru.tinkoff.piapi.core.OperationsService;
@@ -33,6 +34,7 @@ public record PortfolioService(UsersService usersService,
 
     public List<Account> getAccounts() {
         return usersService.getAccountsSync().stream()
+            .filter(account -> !AccountStatus.ACCOUNT_STATUS_CLOSED.equals(account.getStatus()))
             .map(accountMapper::mapAccount)
             .collect(Collectors.toList());
     }
