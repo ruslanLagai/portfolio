@@ -1,7 +1,6 @@
 package com.home.project.portfolio.service;
 
 import com.home.project.portfolio.mapper.OperationMapper;
-import com.home.project.portfolio.model.analytic.Period;
 import com.home.project.portfolio.model.operations.Operation;
 import com.home.project.portfolio.model.operations.Status;
 import com.home.project.portfolio.repository.OperationRepository;
