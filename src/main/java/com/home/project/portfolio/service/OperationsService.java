@@ -12,6 +12,8 @@ import org.springframework.util.CollectionUtils;
 import ru.tinkoff.piapi.core.exception.ApiRuntimeException;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,12 +33,12 @@ public record OperationsService(ru.tinkoff.piapi.core.OperationsService operatio
                                 StockHelperService stockHelperService,
                                 OperationMapper operationMapper) {
 
-    public List<Operation> getLastOperations(String accountId, Period period) {
-        log.info("Retrieving operations for account {}, period {}", accountId, period.name());
+    public List<Operation> getLastOperations(String accountId, LocalDate date) {
+        log.info("Retrieving operations for account {}, from {}", accountId, date);
 
         List<Operation> operations = new ArrayList<>();
         ZonedDateTime lastDbOperation = null;
-        var start = ZonedDateTime.now().minus(period.getPeriodDuration());
+        var start = ZonedDateTime.of(date.atStartOfDay(), ZoneId.systemDefault());
         var end = ZonedDateTime.now();
         var dbOperations = operationRepository
             .getByAccountIdAndDateBetweenOrderByDateDesc(accountId, start, end);
@@ -81,8 +83,7 @@ public record OperationsService(ru.tinkoff.piapi.core.OperationsService operatio
                 accountId, e.getCode(), e.getMessage());
         }
 
-        log.info("Retrieved {} operations for period: {}. Starting from {}", operations.size(),
-                period.getPeriodDuration(), start);
+        log.info("Retrieved {} operations from: {}. Starting from {}", operations.size(), date, start);
 
         // add the old list of operations from database operations for the period selected
         operations.addAll(operationMapper.mapToRest(dbOperations));

@@ -3,7 +3,6 @@ package com.home.project.portfolio.service;
 import com.home.project.portfolio.helpers.TestUtils;
 import com.home.project.portfolio.mapper.OperationMapper;
 import com.home.project.portfolio.model.InstrumentType;
-import com.home.project.portfolio.model.analytic.Period;
 import com.home.project.portfolio.model.entity.OperationEntity;
 import com.home.project.portfolio.model.operations.Status;
 import com.home.project.portfolio.repository.OperationRepository;
@@ -22,6 +21,7 @@ import ru.tinkoff.piapi.core.InstrumentsService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -92,7 +92,7 @@ class OperationsServiceTest extends AbstractDbTest {
     void a1getLastOperations() {
         when(tinkoffOperationService.getExecutedOperationsSync(eq(ACCOUNT_ID), any(), any())).thenReturn(List.of());
 
-        var result = operationsService.getLastOperations(ACCOUNT_ID, Period.LAST_SIX_MONTH);
+        var result = operationsService.getLastOperations(ACCOUNT_ID, LocalDate.now().minus(java.time.Period.ofMonths(6)));
         var savedOperations = operationRepository.getByAccountId(ACCOUNT_ID);
         assertAll(() -> {
             assertThat(result.size(), Matchers.greaterThan(10));
@@ -108,7 +108,7 @@ class OperationsServiceTest extends AbstractDbTest {
         when(instrumentsService.getInstrumentByFigiSync(any()))
             .thenReturn(ru.tinkoff.piapi.contract.v1.Instrument.newBuilder().setTicker("ticker").build());
 
-        var result = operationsService.getLastOperations(ACCOUNT_ID, Period.LAST_SIX_MONTH);
+        var result = operationsService.getLastOperations(ACCOUNT_ID, LocalDate.now().minus(java.time.Period.ofMonths(6)));
         var savedOperations = operationRepository.getByAccountId(ACCOUNT_ID);
         assertAll(() -> {
             assertThat(result.size(), Matchers.greaterThan(10));
@@ -126,7 +126,7 @@ class OperationsServiceTest extends AbstractDbTest {
 
         operationRepository.deleteAll();
 
-        var result = operationsService.getLastOperations(ACCOUNT_ID, Period.LAST_SIX_MONTH);
+        var result = operationsService.getLastOperations(ACCOUNT_ID, LocalDate.now().minus(java.time.Period.ofMonths(6)));
         var savedOperations = operationRepository.getByAccountId(ACCOUNT_ID);
         assertAll(() -> {
             assertThat(result.size(), Matchers.equalTo(10));

@@ -2,7 +2,10 @@ version: "3.9"
 services:
 
   webapp:
-    image: ruslanlagai/portfolio_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: none
     container_name: tportfolio_api
     env_file:
       - .env
