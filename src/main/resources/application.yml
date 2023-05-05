@@ -15,6 +15,9 @@ server:
       enabled: true
 
 spring:
+  mvc:
+    format:
+      date: dd.MM.yyyy
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.mysql.cj.jdbc.MysqlConnectionPoolDataSource

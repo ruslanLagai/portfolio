@@ -3,7 +3,6 @@ package com.home.project.portfolio.service;
 import com.home.project.portfolio.helpers.TestUtils;
 import com.home.project.portfolio.mapper.OperationMapper;
 import com.home.project.portfolio.model.Currency;
-import com.home.project.portfolio.model.analytic.Period;
 import com.home.project.portfolio.repository.OperationRepository;
 import com.home.project.portfolio.repository.StockRepository;
 import com.home.project.portfolio.utils.OperationGroups;
@@ -24,6 +23,7 @@ import ru.tinkoff.piapi.contract.v1.Operation;
 import ru.tinkoff.piapi.core.InstrumentsService;
 import ru.tinkoff.piapi.core.OperationsService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.home.project.portfolio.service.OperationsServiceTest.ACCOUNT_ID;
@@ -118,7 +118,7 @@ class AnalyticServiceTest {
             .thenReturn(Instrument.newBuilder().setIsin("BBG009S3NB30").setTicker("GOOG").setInstrumentType("share").setName("Google").build());
 
 
-        var result = analyticService.analyzeAccount(ACCOUNT_ID, Period.ALL_TIME);
+        var result = analyticService.analyzeAccount(ACCOUNT_ID, LocalDate.now().minusYears(6));
 
         var savedTickers = stockRepository.findAll();
         var savedOperations = operationRepository.findAll();

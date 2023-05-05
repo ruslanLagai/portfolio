@@ -56,7 +56,7 @@ class AnalyticControllerTest {
     void getAnalyticFor() {
         mockMvc.perform(get("/analytic")
                         .param("accountId", "123")
-                        .param("period", "day")
+                        .param("period", "20.04.2023")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.analyticData").exists())
