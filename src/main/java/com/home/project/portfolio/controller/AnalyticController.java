@@ -27,7 +27,7 @@ public class AnalyticController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAnalyticFor(@RequestParam String accountId, @RequestParam(value = "period") LocalDate date) {
+    public ResponseEntity<?> getAnalyticFor(@RequestParam String accountId, @RequestParam(value = "startDate") LocalDate date) {
         AnalyticDto analyticDto = null;
         try {
             analyticDto = analyticService.analyzeAccount(accountId, date);
