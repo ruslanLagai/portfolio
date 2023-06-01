@@ -1,11 +1,11 @@
 package com.home.project.portfolio.processor;
 
-import com.home.project.portfolio.PortfolioAspect;
+import com.home.project.portfolio.aop.PortfolioAspect;
 import com.home.project.portfolio.mapper.PositionMapper;
 import com.home.project.portfolio.model.operations.Overbook;
 import com.home.project.portfolio.model.response.PortfolioDto;
 import com.home.project.portfolio.utils.PriceUtils;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.tinkoff.piapi.contract.v1.LastPrice;
 import ru.tinkoff.piapi.core.InstrumentsService;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Class to populate portfolioDto by stocks
  */
 @Component
-@Log4j2
+@Slf4j
 public class AccountProcessorImpl implements AccountProcessor {
 
     private final OperationsService operationsService;
@@ -82,7 +82,6 @@ public class AccountProcessorImpl implements AccountProcessor {
 
     private double getPriceForFrozenItems(String figi) {
         var overbook = marketDataService.getOrderBookSync(figi, 1);
-        var price = PriceUtils.toDoubleValue(overbook.getLastPrice());
-        return price;
+        return PriceUtils.toDoubleValue(overbook.getLastPrice());
     }
 }
