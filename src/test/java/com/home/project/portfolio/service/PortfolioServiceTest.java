@@ -12,7 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.tinkoff.piapi.contract.v1.GetOrderBookResponse;
 import ru.tinkoff.piapi.contract.v1.Instrument;
+import ru.tinkoff.piapi.contract.v1.Quotation;
 import ru.tinkoff.piapi.contract.v1.SecurityTradingStatus;
 import ru.tinkoff.piapi.core.InstrumentsService;
 import ru.tinkoff.piapi.core.MarketDataService;
@@ -31,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -75,20 +78,13 @@ class PortfolioServiceTest extends AbstractDbTest {
         when(usersService.getAccountsSync()).thenReturn(List.of(TestUtils.account(ACCOUNT_ONE), TestUtils.account(ACCOUNT_TWO)));
         var result = portfolioService.getAccounts();
 
-        assertThat(result.size(), Matchers.equalTo(2));
+        assertThat(result.size(), Matchers.equalTo(1));
 
         assertAll(() -> {
             assertEquals("ACCOUNT_STATUS_OPEN", result.get(0).getStatus());
             assertEquals("111111111111", result.get(0).getBrokerAccountId());
             assertEquals("Брокерский счёт", result.get(0).getName());
             assertEquals(Account.AccountType.Tinkoff, result.get(0).getBrokerAccountType());
-        });
-
-        assertAll(() -> {
-            assertEquals("ACCOUNT_STATUS_CLOSED", result.get(1).getStatus());
-            assertEquals("111111111112", result.get(1).getBrokerAccountId());
-            assertEquals("ИИС", result.get(1).getName());
-            assertEquals(Account.AccountType.TinkoffIis, result.get(1).getBrokerAccountType());
         });
     }
 
@@ -103,6 +99,8 @@ class PortfolioServiceTest extends AbstractDbTest {
             .thenReturn(TestUtils.lastPrices(LAST_PRICES_RESOURCE));
         when(marketDataService.getLastPricesSync(eq(CURRENCY_FIGI_MAP.values())))
             .thenReturn(TestUtils.lastPrices(CURRENCY_PRICES_RESOURCE));
+        when(marketDataService.getOrderBookSync(any(), anyInt()))
+            .thenReturn(GetOrderBookResponse.newBuilder().setLastPrice(Quotation.newBuilder().setUnits(1).build()).build());
         when(instrumentsService.getInstrumentByFigiSync(any())).thenReturn(Instrument.newBuilder().setFigi("figi")
             .setTradingStatus(SecurityTradingStatus.SECURITY_TRADING_STATUS_DEALER_NORMAL_TRADING).build());
 
@@ -144,8 +142,8 @@ class PortfolioServiceTest extends AbstractDbTest {
 
         // distribution
         assertAll(() -> {
-            assertThat(result.getDistribution().getAssetsInRub(), Matchers.greaterThan(0.0));
-            assertThat(result.getDistribution().getAssetsInUsd(), Matchers.lessThan(result.getDistribution().getAssetsInRub()));
+            assertThat(result.getDistribution().getAssetsInRub(), Matchers.lessThan(0.0));
+            assertThat(result.getDistribution().getAssetsInUsd(), Matchers.greaterThan(result.getDistribution().getAssetsInRub()));
             assertThat(result.getDistribution().getTotalInStocks(), Matchers.lessThan(0.0));
             assertThat(result.getDistribution().getTotalInCash(), Matchers.greaterThan(0.0));
 

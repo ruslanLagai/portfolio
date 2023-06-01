@@ -54,6 +54,9 @@ public class AccountProcessorImpl implements AccountProcessor {
                 var lastPrices = marketDataService.getLastPricesSync(figis).stream()
                     .collect(Collectors.toMap(LastPrice::getFigi, lastPrice -> {
                         var price = PriceUtils.toDoubleValue(lastPrice.getPrice());
+                        if (price == 0.0) {
+                            price = getPriceForFrozenItems(lastPrice.getFigi());
+                        }
                         var overbook = new Overbook();
                         overbook.setLastPrice(price);
                         overbook.setFigi(lastPrice.getFigi());
@@ -75,5 +78,11 @@ public class AccountProcessorImpl implements AccountProcessor {
                 portfolioDto.getPrices().putAll(lastPrices);
                 portfolioAspect.getSemaphore().release();
         });
+    }
+
+    private double getPriceForFrozenItems(String figi) {
+        var overbook = marketDataService.getOrderBookSync(figi, 1);
+        var price = PriceUtils.toDoubleValue(overbook.getLastPrice());
+        return price;
     }
 }
