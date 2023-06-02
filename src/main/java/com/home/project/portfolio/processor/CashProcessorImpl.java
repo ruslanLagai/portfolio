@@ -2,7 +2,7 @@ package com.home.project.portfolio.processor;
 
 import com.home.project.portfolio.model.Currency;
 import com.home.project.portfolio.model.response.PortfolioDto;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.tinkoff.piapi.core.models.Positions;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
  * Class to populate portfolioDto by assets distribution
  */
 @Component
-@Log4j2
+@Slf4j
 public class CashProcessorImpl implements AccountProcessor {
 
     @Override
