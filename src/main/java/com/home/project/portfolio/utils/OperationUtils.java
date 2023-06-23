@@ -44,6 +44,8 @@ public class OperationUtils {
     }
 
     public static Operation buildOperation(Operation operation, int quantityToBeAdded) {
+        // workaround for vtbr as price is > 10 times
+        var payment = operation.getPrice() * quantityToBeAdded * Math.signum(operation.getPayment());
         return Operation.builder()
                 .date(operation.getDate())
                 .status(operation.getStatus())
@@ -59,7 +61,7 @@ public class OperationUtils {
                 .currency(operation.getCurrency())
                 .quantityExecuted(quantityToBeAdded)
                 .quantity(quantityToBeAdded)
-                .payment(operation.getPrice() * quantityToBeAdded * Math.signum(operation.getPayment()))
+                .payment("VTBR".equals(operation.getTicker()) ? payment / 10 : payment)
                 .build();
     }
 }
