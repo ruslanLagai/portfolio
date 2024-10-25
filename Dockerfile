@@ -15,7 +15,15 @@ COPY pom.xml .
 COPY src src
 
 RUN --mount=type=cache,target=/root/.m2/ \
-    mvn -B -e -DnewVersion=${ARTIFACT_VERSION} versions:set package -DskipTests
+    mvn clean package -B -e  \
+    -DTINKOFF_API_TOKEN="$TINKOFF_API_TOKEN" -DnewVersion=${ARTIFACT_VERSION} versions:set -DskipTests
+
+# ------------------------------------------------------------------------------
+# COPY COVERAGE STAGE (after build)
+# ------------------------------------------------------------------------------
+
+FROM scratch AS test-out
+COPY --from=build-image  /workspace/coverage .
 
 # ------------------------------------------------------------------------------
 # RUNTIME STAGE (deployment)

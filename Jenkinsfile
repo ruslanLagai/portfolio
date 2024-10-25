@@ -17,26 +17,13 @@ pipeline {
             }
         }
 
-        stage('Fix maven executable') {
-            steps {
-                sh 'chmod +x mvnw'
-            }
-        }
-
-        stage('Maven build') {
+        stage('Build docker image') {
             environment {
                 TINKOFF_API_TOKEN = credentials('TINKOFF_API_TOKEN')
             }
-            tools {
-                jdk "JDK-17"
-            }
             steps {
-                sh '''
-                 export JAVA_HOME=/home/jenkins/tools/hudson.model.JDK/JDK-17/jdk-17.0.2
-                 ./mvnw clean package -DTINKOFF_API_TOKEN="$TINKOFF_API_TOKEN"
-                '''
+                sh 'docker build -t tportfolio .'
             }
-
         }
 
         stage('Publish tests') {
@@ -59,12 +46,6 @@ pipeline {
                     --prettyPrint''', odcInstallation: 'Dependency Checker'
 
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-            }
-        }
-
-        stage('Build docker image') {
-            steps {
-                sh 'docker build -t tportfolio .'
             }
         }
 
