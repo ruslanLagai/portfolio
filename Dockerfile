@@ -23,7 +23,14 @@ RUN --mount=type=cache,target=/root/.m2/ \
 # ------------------------------------------------------------------------------
 
 FROM scratch AS test-out
-COPY --from=build-image  /workspace/coverage .
+COPY --from=build-image  /workspace/target/site/jacoco .
+
+# ------------------------------------------------------------------------------
+# COPY SUREFIRE STAGE (after build)
+# ------------------------------------------------------------------------------
+
+FROM scratch AS test-out
+COPY --from=build-image  /workspace/target/surefire-reports .
 
 # ------------------------------------------------------------------------------
 # RUNTIME STAGE (deployment)
