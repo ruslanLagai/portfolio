@@ -4,7 +4,7 @@
 # BUILD STAGE
 # ------------------------------------------------------------------------------
 
-FROM maven:3.8.4-openjdk-17 as build-image
+FROM maven:3.8.4-openjdk-17 as build
 
 ARG ARTIFACT_VERSION=0.1
 ARG MAVEN_OPTS
@@ -23,10 +23,10 @@ RUN --mount=type=cache,target=/root/.m2/ \
 # ------------------------------------------------------------------------------
 
 FROM scratch AS jacoco-out
-COPY --from=build-image  /workspace/target/site/jacoco .
+COPY --from=build /workspace/target/site/jacoco .
 
 FROM scratch AS surefire-out
-COPY --from=build-image  /workspace/target/surefire-reports .
+COPY --from=build /workspace/target/surefire-reports .
 
 # ------------------------------------------------------------------------------
 # RUNTIME STAGE (deployment)
