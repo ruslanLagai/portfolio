@@ -22,7 +22,11 @@ pipeline {
                 TINKOFF_API_TOKEN = credentials('TINKOFF_API_TOKEN')
             }
             steps {
-                sh 'docker build -t tportfolio .'
+                sh '''
+                   docker build -t tportfolio .
+                   docker build --target jacoco --output type=local,dest=jacoco .
+                   docker build --target surefire --output type=local,dest=surefire .
+                '''
             }
         }
 
@@ -67,7 +71,7 @@ pipeline {
 
     post {
         always {
-            junit skipPublishingChecks: true, testResults: '**/target/surefire-reports/*.xml'
+            junit skipPublishingChecks: true, testResults: '**/surefire/*.xml'
         }
     }
 }

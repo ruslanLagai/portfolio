@@ -16,16 +16,16 @@ COPY src src
 
 RUN --mount=type=cache,target=/root/.m2/ \
     mvn clean package -B -e  \
-    -DTINKOFF_API_TOKEN="$TINKOFF_API_TOKEN" -DnewVersion=${ARTIFACT_VERSION} versions:set -DskipTests
+    -DTINKOFF_API_TOKEN="$TINKOFF_API_TOKEN" -DnewVersion=${ARTIFACT_VERSION} versions:set
 
 # ------------------------------------------------------------------------------
 # COPY COVERAGE STAGE (after build)
 # ------------------------------------------------------------------------------
 
-FROM scratch AS jacoco-out
+FROM scratch AS jacoco
 COPY --from=build /workspace/target/site/jacoco .
 
-FROM scratch AS surefire-out
+FROM scratch AS surefire
 COPY --from=build /workspace/target/surefire-reports .
 
 # ------------------------------------------------------------------------------
