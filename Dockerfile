@@ -4,7 +4,7 @@
 # BUILD STAGE
 # ------------------------------------------------------------------------------
 
-FROM maven:3.8.4-openjdk-17 as build
+FROM maven:3.8.4-openjdk-17 as build-image
 
 ARG ARTIFACT_VERSION=0.1
 ARG MAVEN_OPTS
@@ -22,14 +22,10 @@ RUN --mount=type=cache,target=/root/.m2/ \
 # COPY COVERAGE STAGE (after build)
 # ------------------------------------------------------------------------------
 
-FROM scratch AS test-out
+FROM scratch AS jacoco-out
 COPY --from=build-image  /workspace/target/site/jacoco .
 
-# ------------------------------------------------------------------------------
-# COPY SUREFIRE STAGE (after build)
-# ------------------------------------------------------------------------------
-
-FROM scratch AS test-out
+FROM scratch AS surefire-out
 COPY --from=build-image  /workspace/target/surefire-reports .
 
 # ------------------------------------------------------------------------------
